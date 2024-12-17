@@ -1,117 +1,58 @@
 <script setup>
-import { ref } from 'vue';
+import { useTaskStore } from './stores/taskStore';
 import Task from './components/Task.vue';
 import Modal from './components/Modal.vue';
 
-const taskList = ref([]);
-const showForm = ref(false);
-const showModal = ref(false);
-const selectedTask = ref(null);
-
-// Objet contenant les informations d'une tâche
-const task = ref({
-  title: '',
-  description: '',
-  file: '',
-  subTodoLists: [],
-});
-
-//--------------------- fonctions ----------------------------
-
-const openModal = (task) => {
-  console.log('Tâche sélectionnée :', task);
-  selectedTask.value = task;
-  showModal.value = true;
-};
-
-const toggleForm = () => {
-  showForm.value = !showForm.value;
-  if (showForm.value && task.value.subTodoLists.length === 0) {
-    task.value.subTodoLists.push({ name: '' });
-  }
-};
-
-const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  const reader = new FileReader();
-  reader.onload = () => {
-    task.value.file = reader.result;
-  };
-  if (file) reader.readAsDataURL(file);
-};
-
-const addSubTask = () => {
-  task.value.subTodoLists.push({ name: '' });
-};
-
-const saveTask = () => {
-  const newTask = { ...task.value, subTodoLists: [...task.value.subTodoLists] };
-  taskList.value.push(newTask);
-  resetForm();
-};
-
-const resetForm = () => {
-  showForm.value = false;
-  task.value = { title: '', description: '', file: '', subTodoLists: [] };
-};
-
-const removeTask = (index) => {
-  taskList.value.splice(index, 1);
-};
+const taskStore = useTaskStore();
 </script>
 
 <template>
   <div class="container">
     <h1>LISTE DES TACHES</h1>
-    <button @click="toggleForm" class="add-button">Créer une nouvelle tâche</button>
+    <button @click="taskStore.toggleForm" class="add-button">Créer une nouvelle tâche</button>
 
-    <form v-if="showForm" @submit.prevent="saveTask">
+    <form v-if="taskStore.showForm" @submit.prevent="taskStore.addTask">
       <label style="color:black;">Titre de la Tache</label>
-      <br /><input type="text" v-model="task.title" placeholder="Titre de la tache" required />
+      <br /><input type="text" v-model="taskStore.task.title" placeholder="Titre de la tache" required />
       <br /><label style="color:black;">Sélectionner une image</label>
-      <br /><input type="file" @change="handleFileUpload" required />
+      <br /><input type="file" @change="e => taskStore.handleFileUpload(e.target.files[0])" required />
       <br /><label style="color:black;">Description</label>
-      <br /><textarea v-model="task.description" required></textarea>
+      <br /><textarea v-model="taskStore.task.description" required></textarea>
 
       <label style="color:black;">Étape de réalisation de la tâche</label>
-      <div v-for="(subTask, index) in task.subTodoLists" :key="index">
+      <div v-for="(subTask, index) in taskStore.task.subTodoLists" :key="index">
         <br /><input v-model="subTask.name" type="text" required />
       </div>
-      <button class="btn btn-secondary" @click.prevent="addSubTask">
+      <button class="btn btn-secondary" @click.prevent="taskStore.addSubTask">
         Ajouter une étape
       </button>
 
       <br /><button type="submit">ENREGISTRER</button>
     </form>
 
-    <!-- Interface des listes de tâches -->
-    <div v-if="taskList.length === 0" style="display: flex; justify-content: center; align-items: center; color:black; height: 60vh; font-size: 60px;">
+    <div v-if="taskStore.taskList.length === 0" style="display: flex; justify-content: center; align-items: center; color:black; height: 60vh; font-size: 60px;">
       <img src="@/assets/animations/alarme.gif" alt="Animation GIF" style="width: 150px; height: 150px;" />
-      <br/>Aucune Tâches disponible :(
+      <br />Aucune Tâches disponible :(
     </div>
     <div v-else class="tasks-grid">
-      <!-- Boucle pour afficher les tâches -->
       <Task
-        v-for="(list, index) in taskList"
+        v-for="(list, index) in taskStore.taskList"
         :key="index"
         :data="list"
-        @open-modal="openModal"
-        @remove-tasks="removeTask(index)"
+        @open-modal="taskStore.openModal"
+        @remove-tasks="taskStore.removeTask(index)"
       />
-      <Modal :isVisible="showModal" :data="selectedTask" @close="showModal = false">
+      <Modal :isVisible="taskStore.showModal" :data="taskStore.selectedTask" @close="taskStore.showModal = false">
         <ul>
-          <li v-for="(subTask, index) in selectedTask?.subTodoLists" :key="index">
+          <li v-for="(subTask, index) in taskStore.selectedTask?.subTodoLists" :key="index">
             {{ subTask.name }}
           </li>
         </ul>
       </Modal>
     </div>
-
-    <!-- Modal -->
-
-
-    </div>
+  </div>
 </template>
+
 
 
 
@@ -209,7 +150,7 @@ const removeTask = (index) => {
       background-color: #059211;
       color: #ffffff;
       border: none;
-      padding: 10px 20px;
+      padding: 10px 50px;
       border-radius: 5px;
       cursor: pointer;
       float: right;
