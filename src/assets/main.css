@@ -1,9 +1,0 @@
-.container {
-    width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      padding:0px 60px; /* Espacement interne */
-      box-sizing: border-box; /* Inclut le padding dans la taille totale */   
-      background-color: white;  
-  } 

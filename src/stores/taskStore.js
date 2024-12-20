@@ -31,7 +31,11 @@ export const useTaskStore = defineStore('taskStore', () => {
   const removeTask = (index) => {
     taskList.value.splice(index, 1);
   };
-
+  const removeSubTask = (index) => {
+    if (task.value.subTodoLists && index >= 0 && index < task.value.subTodoLists.length) {
+      task.value.subTodoLists.splice(index, 1);
+    }
+  };
   const toggleForm = () => {
     showForm.value = !showForm.value;
     if (showForm.value && task.value.subTodoLists.length === 0) {
@@ -69,5 +73,6 @@ export const useTaskStore = defineStore('taskStore', () => {
     openModal,
     handleFileUpload,
     addSubTask,
+    removeSubTask,
   };
 });
