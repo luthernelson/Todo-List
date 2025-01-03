@@ -21,7 +21,7 @@ const removeTask = (index) => {
   <div>
     <div>
       <div
-        class="bg-gray-700 bg-opacity-5 shadow-2lg rounded-md p-6 flex items-start gap-4 relative transition-transform duration-200"
+        class="bg-gray-700 bg-opacity-5 shadow-2lg rounded-md p-6 flex items-start gap-4 relative transition-transform duration-200 shadow-2xl"
       >
         <div
           class="w-30 h-30 bg-red-500 rounded-full flex justify-center items-center text-black text-xl font-bold uppercase"
