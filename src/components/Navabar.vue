@@ -1,13 +1,3 @@
-<script setup>
-import { useUserStore } from '@/stores/userStore'
-import { RouterLink } from 'vue-router'
-import { ref } from 'vue'
-
-// Accès au store utilisateur
-const userStore = useUserStore()
-const isMenuOpen = ref(false) // État pour afficher/masquer le menu vertical
-</script>
-
 <template>
   <div>
     <!-- Barre de navigation principale -->
@@ -57,7 +47,7 @@ const isMenuOpen = ref(false) // État pour afficher/masquer le menu vertical
             <i class="fa-solid fa-circle-user text-4xl text-white"></i>
           </button>
           <h6 class="text-white mt-0 text-sm">
-            {{ userStore.user ? userStore.user.Username : 'Utilisateur' }}
+            {{ userStore.user ? userStore.user.username : 'Utilisateur' }}
           </h6>
         </div>
       </div>
@@ -86,6 +76,16 @@ const isMenuOpen = ref(false) // État pour afficher/masquer le menu vertical
     </div>
   </div>
 </template>
+
+<script setup>
+import { useUserStore } from '@/stores/userStore'
+import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
+
+// Accès au store utilisateur
+const userStore = useUserStore()
+const isMenuOpen = ref(false) // État pour afficher/masquer le menu vertical
+</script>
 
 <style scoped>
 /* Ajout de styles si nécessaire */

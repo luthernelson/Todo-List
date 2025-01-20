@@ -11,16 +11,12 @@ const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value
 }
 
-const loginUser = () => {
-  const userL = JSON.parse(localStorage.getItem('Users')).filter(
-    (e) => e.Username === email.value && e.password === password.value,
-  );
-  console.log('User', userL)
-  if (userL && userL.length > 0) {
-    userStore.login(userL[0], '')
-    router.push('/')
-  }else{
-    alert("Nom de d'utilisateur ou mot de passe incorrect!")
+const loginUser = async () => {
+  try {
+    await userStore.login(email.value, password.value) // Appel à la méthode de connexion du store
+    router.push('/') // Redirection vers la page d'accueil après connexion
+  } catch (error) {
+    alert("Nom d'utilisateur ou mot de passe incorrect!", error)
   }
 }
 </script>
