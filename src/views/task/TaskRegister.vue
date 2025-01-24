@@ -65,9 +65,16 @@ const addNewTask = async () => {
         ...newTaskData,
         todos: finalTodos,
       })
+      console.log('resutl.updateTask', result)
 
       // Mise à jour de la tâche dans le store
-      taskStore.setSelectedTask(result)
+      taskStore.setSelectedTask({
+        idTask: currentTask.task.idTask,
+        title: newTaskData.title || currentTask.task.title, // ou currentTask.task.title si tu ne veux pas le modifier
+        description: newTaskData.description || currentTask.task.description,
+        todos: finalTodos,
+      })
+      await getAllTask()
     } else {
       // Création d'une nouvelle tâche
       const createdTask = await apiService.addTask(newTaskData)
@@ -296,7 +303,7 @@ onBeforeMount(async () => {
               type="submit"
               class="w-full mt-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-all"
             >
-              {{ taskStore.selectedTask ? 'EDIT' : 'ENREGISTRER' }}
+              {{ taskStore.selectedTask ? 'SAUVEGARDER' : 'ENREGISTRER' }}
             </button>
           </div>
         </div>
@@ -315,7 +322,7 @@ onBeforeMount(async () => {
     <!-- Liste des tâches -->
     <div
       v-if="!taskStore.showForm && taskStore.taskList.length > 0"
-      class="w-full max-w-6xl grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 flex-1 ju"
+      class="w-full max-w-[1800px] grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-1 ju"
     >
       <Task
         v-for="(task, index) in taskStore.taskList"

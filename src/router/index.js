@@ -8,20 +8,27 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: () => import('@/views/task/TaskRegister.vue'),
-      meta: { dontRequiresAuth: true },
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/community',
+      name: 'community',
+      component: () => import('@/views/community/Community.vue'),
     },
     {
       path: '/login',
       name: 'login',
       component: () => import('@/views/connexion/TaskLogin.vue'),
-      meta: { dontRequiresAuth: true },
+      meta: { requiresAuth: false },
     },
   ],
 })
 // Navigation guard for protected routes
 router.beforeEach((to, from, next) => {
   const store = useUserStore()
-  if (!to.meta.dontRequiresAuth && !store.isLoggedIn) {
+  console.log('to.meta.requiresAuth', to.meta.requiresAuth)
+  console.log('store.isLoggedIn', store.isLoggedIn)
+  if (to.meta.requiresAuth && !store.isLoggedIn) {
     // Redirect to login if not logged in
     next('/login')
   } else {

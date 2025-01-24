@@ -11,8 +11,19 @@ console.log('data:', props.data)
 /* const toggleTaskState = (task) => {
   task.etat = task.etat === 'Terminé' ? 'En cours' : 'Terminé' // fonction gérant le statut d'une tâche
 } */
-console.log(props.data.task.isCompleted)
+console.log(props.data.task.isCompled)
+const numtodoisCompled = () => {
+  let number = 0 // Initialisez le compteur à 0
 
+  // Parcourez le tableau de todos
+  for (const todo of props.data.todos) {
+    if (todo.isCompled === true) {
+      number += 1 // Incrémentez le compteur si isCompled est vrai
+    }
+  }
+
+  return number // Retournez le nombre de todos complétés
+}
 const removeTask = () => {
   // fonction de suppression d'une tâche
   console.log('ID de la tâche à supprimer:', props.data.task.idTask) // Ajoutez un log pour vérifier l'ID
@@ -50,18 +61,31 @@ const removeTask = () => {
             :src="data.task.isCompled ? imageCheck : imageLoad"
             alt="Statut de la tâche"
           />
-          <button
-            @click="removeTask"
-            class="absolute bottom-2 right-2 text-red-500 hover:text-red-700 p-2 w-8 h-8 flex items-center justify-center rounded-md"
+          <span
+            class="absolute bottom-1 text-left text-[12px] text-gray-600 text-[12px] italic font-bold"
           >
-            <i class="fa-solid fa-trash-can text-xl"></i>
-          </button>
-          <button
-            @click="$emit('open-update-modal', data)"
-            class="absolute bottom-2 right-10 text-red-500 hover:text-red-700 p-2 w-8 h-8 flex items-center justify-center rounded-md"
-          >
-            <i class="fa-solid fa-pen-to-square text-xl" style="color: #0091ff"></i>
-          </button>
+            {{ numtodoisCompled() }} tache(s) commplété / {{ data.todos.length }} tache(s)
+          </span>
+          <div class="absolute bottom-1 right-0 flex space-x-2">
+            <button
+              class="text-red-500 hover:text-red-700 p-2 w-8 h-8 flex items-center justify-center rounded-md"
+            >
+              <i class="fa-solid fa-share" style="color: #1db927"></i>
+            </button>
+            <button
+              @click="$emit('open-update-modal', data)"
+              class="text-red-500 hover:text-red-700 p-2 w-8 h-8 flex items-center justify-center rounded-md"
+            >
+              <i class="fa-solid fa-pen-to-square text-xl" style="color: #0091ff"></i>
+            </button>
+
+            <button
+              @click="removeTask"
+              class="text-red-500 hover:text-red-700 p-2 w-8 h-8 flex items-center justify-center rounded-md"
+            >
+              <i class="fa-solid fa-trash-can text-xl"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>

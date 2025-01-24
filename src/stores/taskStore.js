@@ -7,7 +7,7 @@ export const useTaskStore = defineStore('taskStore', {
     taskList: [],
     showForm: false,
     showModal: false,
-    selectedTask: [],
+    selectedTask: null,
     showUpdateModal: false,
   }),
 

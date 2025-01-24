@@ -9,18 +9,30 @@ export const useUserStore = defineStore('user', {
   }),
 
   getters: {
-    isLoggedIn: (state) => !!state.user, // Vérifie si un utilisateur est connecté
+    isLoggedIn: (state) => {
+      console.log('STATE.user', state.user)
+      return state.user ? true : false
+    }, // Vérifie si un utilisateur est connecté
     getUser: (state) => state.user, // Récupère l'utilisateur connecté
   },
 
   actions: {
+    // Méthode pour vérifier l'authentification
+    checkAuth() {
+      const token = this.token // Récupérer le token depuis l'état
+      if (token) {
+        setAuthToken(token) // Configurer le token pour les requêtes futures
+        // Optionnel : Récupérer les informations de l'utilisateur du serveur
+        // this.getUserFromToken(token);
+      }
+    },
     async login(email, password) {
       try {
         const { user, token } = await apiService.login(email, password) // Utilisez la méthode de connexion
         this.user = user
         this.token = token
         setAuthToken(token) // Configurer le token pour les requêtes futures
-        console.log('Utilisateur connecté :', this.user)
+        console.log('Utilisateur connecté :', user)
       } catch (error) {
         console.error("Erreur lors de l'authentification:", error)
         throw new Error('Échec de la connexion. Veuillez vérifier vos identifiants.')
@@ -34,3 +46,9 @@ export const useUserStore = defineStore('user', {
     },
   },
 })
+// Appeler checkAuth lors de l'utilisation du store
+export function useAuth() {
+  const userStore = useUserStore()
+  userStore.checkAuth() // Vérifier l'authentification à l'initialisation
+  return userStore
+}

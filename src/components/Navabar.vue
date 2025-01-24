@@ -4,21 +4,27 @@
     <nav class="bg-blue-500 py-4 shadow-lg flex items-center justify-between px-4">
       <!-- Menu horizontal pour moyens et grands écrans -->
       <ul class="hidden md:flex space-x-6 items-center justify-center flex-1">
+        <RouterLink
+          to="/"
+          class="text-white hover:text-blue-200 transition-colors duration-300"
+          :class="{ 'text-blue-200 font-bold': activeLink === '/' }"
+          @click="setActiveLink('/')"
+        >
+          Accueil
+        </RouterLink>
         <li>
           <a href="#" class="text-white hover:text-blue-200 transition-colors duration-300">
-            Home
+            A Propos
           </a>
         </li>
-        <li>
-          <a href="#" class="text-white hover:text-blue-200 transition-colors duration-300">
-            About
-          </a>
-        </li>
-        <li>
-          <a href="#" class="text-white hover:text-blue-200 transition-colors duration-300">
-            Contact
-          </a>
-        </li>
+        <RouterLink
+          to="/community"
+          class="text-white hover:text-blue-200 transition-colors duration-300"
+          :class="{ 'text-blue-200 font-bold': activeLink === '/community' }"
+          @click="setActiveLink('/community')"
+        >
+          Communauté
+        </RouterLink>
       </ul>
 
       <!-- Bouton hamburger pour petits écrans -->
@@ -47,7 +53,7 @@
             <i class="fa-solid fa-circle-user text-4xl text-white"></i>
           </button>
           <h6 class="text-white mt-0 text-sm">
-            {{ userStore.user ? userStore.user.username : 'Utilisateur' }}
+            {{ userStore.user ? userStore.user.user.username : 'Utilisateur' }}
           </h6>
         </div>
       </div>
@@ -59,18 +65,21 @@
       class="absolute bg-blue-500 bg-opacity-90 text-white w-48 mt-[0px] shadow-md"
     >
       <ul class="space-y-0 text-center">
-        <li>
-          <a href="#" class="block py-2 hover:bg-blue-700 transition-colors duration-300"> Home </a>
-        </li>
+        <RouterLink to="/" class="text-white hover:text-blue-200 transition-colors duration-300">
+          Accueil
+        </RouterLink>
         <li>
           <a href="#" class="block py-2 hover:bg-blue-700 transition-colors duration-300">
-            About
+            A Propos
           </a>
         </li>
         <li>
-          <a href="#" class="block py-2 hover:bg-blue-700 transition-colors duration-300">
-            Contact
-          </a>
+          <RouterLink
+            to="/community"
+            class="text-white hover:text-blue-200 transition-colors duration-300"
+          >
+            Communauté
+          </RouterLink>
         </li>
       </ul>
     </div>
@@ -85,6 +94,10 @@ import { ref } from 'vue'
 // Accès au store utilisateur
 const userStore = useUserStore()
 const isMenuOpen = ref(false) // État pour afficher/masquer le menu vertical
+const activeLink = ref('/')
+function setActiveLink(link) {
+  activeLink.value = link // Met à jour le lien actif
+}
 </script>
 
 <style scoped>

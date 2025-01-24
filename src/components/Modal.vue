@@ -99,7 +99,7 @@ const handleUpdate = async () => {
               <li v-for="(todo, index) in data.todos" :key="index" class="flex items-center">
                 <input
                   type="checkbox"
-                  class="mr-2"
+                  class="mr-2 w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   :checked="todo.isCompled"
                   @click="
                     () => {
