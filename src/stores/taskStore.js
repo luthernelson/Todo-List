@@ -5,10 +5,13 @@ import { apiService } from '@/service/apiServices'
 export const useTaskStore = defineStore('taskStore', {
   state: () => ({
     taskList: [],
+    sharedTaskList: [],
     showForm: false,
     showModal: false,
     selectedTask: null,
     showUpdateModal: false,
+    UsersList: [],
+    ismodalvisible: false,
   }),
 
   getters: {},
@@ -16,6 +19,7 @@ export const useTaskStore = defineStore('taskStore', {
   actions: {
     // Charger les tâches pour l'utilisateur connecté
     // Charger les tâches pour l'utilisateur connecté
+
     async loadUserTasks() {
       const userStore = useUserStore()
       const currentUser = userStore.token
@@ -33,7 +37,9 @@ export const useTaskStore = defineStore('taskStore', {
         console.error('Erreur lors du chargement des tâches:', error)
       }
     },
-
+    loadUser(users) {
+      this.UsersList = users
+    },
     // Ajouter une tâche
     addTask(newTask) {
       console.log('old:', this.taskList)
@@ -56,11 +62,17 @@ export const useTaskStore = defineStore('taskStore', {
     updateSelectedTask(task) {
       this.selectedTask = task
     },
+    checkUserSelectedTask(task) {
+      this.selectedTask = task
+    },
     deleteTodoTask(todoId, taskId) {
       const todo = this.taskList.find((t) => t.task.idTask === taskId)
       if (todo) {
         todo.todos = todo.todos.filter((t) => t.idTodo !== todoId)
       }
+    },
+    updateAfterShare(task) {
+      this.selectedTask = task
     },
     setSelectedTask(task) {
       this.selectedTask = task
@@ -75,6 +87,10 @@ export const useTaskStore = defineStore('taskStore', {
       this.selectedTask = task
       this.showModal = true
     },
+    openUserModal() {
+      this.ismodalvisible = true
+    },
+
     openUpdateModal() {
       this.showUpdateModal = true
     },
@@ -88,7 +104,12 @@ export const useTaskStore = defineStore('taskStore', {
         reader.readAsDataURL(file)
       }
     },
-
+    setSharedTaskList(task) {
+      this.sharedTaskList = task
+    },
+    setTaskList(task) {
+      this.taskList = task
+    },
     // Réinitialiser les tâches lors de la déconnexion
     /*     resetTasksOnLogout() {
       this.taskList = [] // Vider la liste des tâches

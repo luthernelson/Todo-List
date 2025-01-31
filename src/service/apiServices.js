@@ -56,7 +56,25 @@ export const apiService = {
         throw error
       })
   },
+  getUser() {
+    return apiClient
+      .get('/getUsers')
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Error lors du chargement des taches de cet utilisateur:', error)
+        throw error
+      })
+  },
 
+  getsharedTasks() {
+    return apiClient
+      .get('/getsharedTasks')
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Error lors du chargement des taches partarges:', error)
+        throw error
+      })
+  },
   //Ajouter une nouvelle tache
 
   addTask(taskData) {
@@ -65,6 +83,15 @@ export const apiService = {
       .then((response) => response.data)
       .catch((error) => {
         console.error("Error lors de l'de cette taches:", error)
+        throw error
+      })
+  },
+  shareTask(taskData) {
+    return apiClient
+      .post('/tasks/shareTasks', taskData)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Error lors du partarge de cette taches:', error)
         throw error
       })
   },

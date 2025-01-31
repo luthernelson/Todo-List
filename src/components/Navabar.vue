@@ -53,7 +53,7 @@
             <i class="fa-solid fa-circle-user text-4xl text-white"></i>
           </button>
           <h6 class="text-white mt-0 text-sm">
-            {{ userStore.user ? userStore.user.user.username : 'Utilisateur' }}
+            {{ userStore.users ? username : 'Utilisateur' }}
           </h6>
         </div>
       </div>
@@ -62,7 +62,7 @@
     <!-- Menu déroulant vertical pour petits écrans -->
     <div
       v-if="isMenuOpen"
-      class="absolute bg-blue-500 bg-opacity-90 text-white w-48 mt-[0px] shadow-md"
+      class="absolute bg-blue-500 bg-opacity-90 text-white w-48 mt-[0px] h-full shadow-md"
     >
       <ul class="space-y-0 text-center">
         <RouterLink to="/" class="text-white hover:text-blue-200 transition-colors duration-300">

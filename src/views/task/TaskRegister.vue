@@ -2,6 +2,7 @@
 import { useTaskStore } from '../../stores/taskStore'
 import Task from '../../components/Task.vue'
 import Modal from '../../components/Modal.vue'
+import UserModal from '../../components/ModalUser.vue'
 import { onBeforeMount, ref } from 'vue'
 import { apiService } from '@/service/apiServices'
 
@@ -193,15 +194,15 @@ onBeforeMount(async () => {
   <div
     class="w-full h-full flex flex-col justify-center items-center px-4 sm:px-8 md:px-12 lg:px-20 pt-8 bg-white"
   >
-    <h1
-      class="font-bold text-3xl sm:text-4xl md:text-5xl font-serif text-center text-gray-800 mb-6"
-    >
-      LISTE DES TACHES
-    </h1>
     <div class="w-full max-w-4xl pt-10">
       <div v-if="!taskStore.showForm" class="flex flex-col mb-20">
+        <h1
+          class="font-bold text-3xl sm:text-4xl md:text-5xl font-serif text-center text-gray-800 mb-6"
+        >
+          LISTE DES TACHES
+        </h1>
         <!-- Bouton de création de tâche -->
-        <div class="flex justify-end mb-4">
+        <div class="flex justify-end mb-4 mt-8">
           <button
             @click="taskStore.toggleForm"
             class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-all"
@@ -240,7 +241,7 @@ onBeforeMount(async () => {
       </div>
       <form
         @submit.prevent="addNewTask"
-        class="bg-gray-100 p-6 rounded-lg shadow-md border border-gray-300 w-full max-w-4xl"
+        class="bg-gray-100 p-6 rounded-lg shadow-md border border-gray-300 w-full overflow-y-auto h-[60vh] max-w-4xl"
       >
         <div>
           <h1 class="text-3xl text-gray-700 font-bold">
@@ -329,6 +330,7 @@ onBeforeMount(async () => {
         :key="index"
         :data="task"
         @open-modal="taskStore.openModal(task)"
+        @open-user-modal="taskStore.openUserModal()"
         @open-update-modal="handleUpdateTask(task)"
         @remove-tasks="handleDeleteTask(task.task.idTask)"
       />
@@ -338,6 +340,8 @@ onBeforeMount(async () => {
         @close="taskStore.showModal = false"
       >
       </Modal>
+      <UserModal :isVisible="taskStore.ismodalvisible" @close="taskStore.ismodalvisible = false">
+      </UserModal>
     </div>
   </div>
 </template>
