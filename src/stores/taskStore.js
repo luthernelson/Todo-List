@@ -6,6 +6,7 @@ export const useTaskStore = defineStore('taskStore', {
   state: () => ({
     taskList: [],
     sharedTaskList: [],
+    allCommentsToTask: [],
     showForm: false,
     showModal: false,
     selectedTask: null,
@@ -109,6 +110,15 @@ export const useTaskStore = defineStore('taskStore', {
     },
     setTaskList(task) {
       this.taskList = task
+    },
+    setTaskLisByID(task) {
+      this.taskList = task
+    },
+    setCommentsToTask(comments) {
+      this.allCommentsToTask = Array.isArray(comments) ? [...comments] : []
+      console.log('this.allCommentsToTask in store', this.allCommentsToTask)
+      // console.log('taskList after set task list', comments)
+      // this.CalculateCompletionPercentage();
     },
     // Réinitialiser les tâches lors de la déconnexion
     /*     resetTasksOnLogout() {

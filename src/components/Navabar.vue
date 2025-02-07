@@ -53,7 +53,7 @@
             <i class="fa-solid fa-circle-user text-4xl text-white"></i>
           </button>
           <h6 class="text-white mt-0 text-sm">
-            {{ userStore.users ? username : 'Utilisateur' }}
+            {{ userStore.username ? userStore.username : 'Utilisateur' }}
           </h6>
         </div>
       </div>

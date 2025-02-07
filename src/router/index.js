@@ -16,8 +16,8 @@ const router = createRouter({
       component: () => import('@/views/community/Community.vue'),
     },
     {
-      path: '/chat',
-      name: 'chat',
+      path: '/community/:id',
+      name: 'CommunityChat',
       component: () => import('@/components/Community.vue'),
     },
     {
@@ -28,17 +28,20 @@ const router = createRouter({
     },
   ],
 })
-// Navigation guard for protected routes
+// Middleware pour les routes protégées
 router.beforeEach((to, from, next) => {
-  const store = useUserStore()
-  console.log('to.meta.requiresAuth', to.meta.requiresAuth)
-  console.log('store.isLoggedIn', store.isLoggedIn)
-  if (to.meta.requiresAuth && !store.isLoggedIn) {
-    // Redirect to login if not logged in
-    next('/login')
+  const userStore = useUserStore()
+
+  // Vérifier si la route nécessite une authentification
+  if (to.meta.requiresAuth && !userStore.isLoggedIn) {
+    // Rediriger vers la page de login avec un paramètre de redirection
+    next({ path: '/login', query: { redirect: to.fullPath } })
   } else {
-    next() // Proceed to the route
+    // Enregistrer la dernière route visitée uniquement si l'utilisateur est connecté
+    if (userStore.isLoggedIn) {
+      userStore.setLastRoute(to.path)
+    }
+    next()
   }
 })
-
 export default router

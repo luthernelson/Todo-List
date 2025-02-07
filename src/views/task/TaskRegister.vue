@@ -187,6 +187,7 @@ onBeforeMount(async () => {
   taskStore.taskList =
     !taskList.tasksWithTodos || taskList.tasksWithTodos.length == 0 ? [] : taskList.tasksWithTodos
   console.log('taskStore.taskList ', taskStore.taskList)
+  taskStore.setTaskList(taskList)
 })
 </script>
 

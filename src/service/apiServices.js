@@ -56,6 +56,16 @@ export const apiService = {
         throw error
       })
   },
+
+  getTaskById(id) {
+    return apiClient
+      .get(`/tasks/${id}`)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Error lors du chargement de la tache:', error)
+        throw error
+      })
+  },
   getUser() {
     return apiClient
       .get('/getUsers')
@@ -72,6 +82,16 @@ export const apiService = {
       .then((response) => response.data)
       .catch((error) => {
         console.error('Error lors du chargement des taches partarges:', error)
+        throw error
+      })
+  },
+
+  getCommentById(id) {
+    return apiClient
+      .get(`/tasks/getComment/${id}`)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Error lors du chargement de la tache:', error)
         throw error
       })
   },
@@ -102,6 +122,15 @@ export const apiService = {
       .then((response) => response.data)
       .catch((error) => {
         console.error("Error lors de l'de cette taches:", error)
+        throw error
+      })
+  },
+  addComment(taskData) {
+    return apiClient
+      .post('/tasks/addComment', taskData)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error("Error lors de l'ajout de commmentaire:", error)
         throw error
       })
   },

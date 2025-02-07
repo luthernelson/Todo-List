@@ -1,12 +1,25 @@
 <script setup>
-import { defineEmits, defineProps } from 'vue'
+import { defineEmits, defineProps, computed } from 'vue'
 import imageCheck from '../assets/images/icons8-ok-48.png'
 import imageLoad from '../assets/images/icons8-load-50.png'
 import { useTaskStore } from '@/stores/taskStore'
 import { apiService } from '@/service/apiServices'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const isCommunity = computed(() => route.path === '/community')
+const isTaskDetailRoute = computed(() => route.params.id !== undefined) // Vérifie si un ID est présent dans les paramètres
+
+console.log('action:', isCommunity)
 
 const taskStore = useTaskStore()
-const emit = defineEmits(['remove-tasks', 'open-modal', 'open-update-modal', 'open-user-modal'])
+const emit = defineEmits([
+  'remove-tasks',
+  'open-modal',
+  'open-update-modal',
+  'open-user-modal',
+  'open-chat',
+])
 const props = defineProps({
   data: Object,
 })
@@ -88,16 +101,28 @@ const handleShareTask = async () => {
           >
             {{ data.task.title }}
           </h2>
-          <p class="text-gray-600 text-lg mt-2 mb-4">{{ data.task.description }}</p>
+          <p v-if="!isTaskDetailRoute" class="text-gray-600 text-lg mt-2 mb-4">
+            {{ data.task.description }}
+          </p>
           <img
+            v-if="!data.task.user"
             class="px-3 py-1 text-xs absolute top-2 right-2 w-14"
             :src="data.task.isCompled ? imageCheck : imageLoad"
             alt="Statut de la tâche"
           />
           <span class="absolute bottom-1 text-left text-[12px] text-gray-600 italic font-bold">
-            {{ numtodoisCompled() }} tâche(s) complétée(s) / {{ data.todos.length }} tâche(s)
+            <template v-if="data.task.user">
+              {{ data.task.user.username }}
+            </template>
+            <template v-else>
+              {{ numtodoisCompled() }} tâche(s) complétée(s) / {{ data.todos.length }} tâche(s)
+            </template>
           </span>
-          <div class="absolute bottom-1 right-0 flex space-x-2">
+
+          <div
+            v-if="!isCommunity && !isTaskDetailRoute"
+            class="absolute bottom-1 right-0 flex space-x-2"
+          >
             <button
               @click="handleShareTask"
               class="text-red-500 hover:text-red-700 p-2 w-8 h-8 flex items-center justify-center rounded-md"
@@ -115,6 +140,17 @@ const handleShareTask = async () => {
               class="text-red-500 hover:text-red-700 p-2 w-8 h-8 flex items-center justify-center rounded-md"
             >
               <i class="fa-solid fa-trash-can text-xl"></i>
+            </button>
+          </div>
+          <div
+            v-if="isCommunity && data.task.user"
+            class="absolute bottom-1 right-0 flex space-x-2"
+          >
+            <button
+              @click="$emit('open-chat', data.task.idTask)"
+              class="text-red-500 hover:text-red-700 p-2 w-8 h-8 flex items-center justify-center rounded-md"
+            >
+              <i class="fa-solid fa-message" style="color: #469cec"></i>
             </button>
           </div>
         </div>

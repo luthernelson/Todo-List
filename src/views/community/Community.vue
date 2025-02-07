@@ -44,6 +44,7 @@
         :key="index"
         :data="task"
         @open-modal="taskStore.openModal(task)"
+        @open-user-modal="taskStore.openUserModal()"
         @open-update-modal="handleUpdateTask(task)"
         @remove-tasks="handleDeleteTask(task.task.idTask)"
       />
@@ -60,9 +61,7 @@
         v-for="(task, index) in taskStore.sharedTaskList"
         :key="index"
         :data="task"
-        @open-modal="taskStore.openModal(task)"
-        @open-update-modal="handleUpdateTask(task)"
-        @remove-tasks="handleDeleteTask(task.task.idTask)"
+        @open-chat="openChat(task.task.idTask)"
       />
     </div>
 
@@ -81,9 +80,17 @@ import { ref } from 'vue'
 import Task from '../../components/Task.vue'
 import { useTaskStore } from '../../stores/taskStore'
 import { apiService } from '@/service/apiServices'
+import { useRouter } from 'vue-router'
 
 const taskStore = useTaskStore()
 const activeTab = ref('profile') // Onglet actif par défaut
+
+const router = useRouter()
+// Fonction pour ouvrir le chat
+const openChat = (taskId) => {
+  // Assurez-vous que taskId est défini
+  router.push(`/community/${taskId}`)
+}
 
 function setActiveTab(tab) {
   activeTab.value = tab // Met à jour l'onglet actif
@@ -109,8 +116,8 @@ const loadTasks = async (tab) => {
     } catch (e) {
       console.error('loadSharedTasks.error >> ', e)
     }
+    console.log('sharedtaskList:', taskStore.sharedTaskList)
   }
-  console.log('sharedtaskList:', taskStore.sharedTaskList)
 }
 </script>
 
