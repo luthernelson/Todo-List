@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, getCurrentInstance } from 'vue'
+import { ref, watch, onMounted, getCurrentInstance, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { apiService } from '@/service/apiServices'
 import { useTaskStore } from '@/stores/taskStore'
@@ -76,6 +76,7 @@ const taskId = ref(route.params.id)
 const task = ref(null)
 const authStore = useUserStore()
 const { proxy } = getCurrentInstance()
+const socketStatus = ref('Déconnecté')
 
 // Liste des membres de la communauté
 const members = ref(['Nelson Luther', 'Bob', 'Charlie', 'David', 'Eve'])
@@ -101,7 +102,6 @@ const formatDate = (dateString) => {
 // Fonction pour formater l'heure (ex: "14:30")
 const formatTime = (dateString) => {
   if (!dateString) return ''
-  console.log('Timestamp:', dateString)
   const date = new Date(dateString)
   return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
 }
@@ -110,10 +110,8 @@ const formatTime = (dateString) => {
 const loadCommentToTasks = async () => {
   try {
     const result = await apiService.getCommentById(taskId.value)
-
-    // Vérifiez que les commentaires sont présents dans la réponse
     if (result.comments && Array.isArray(result.comments)) {
-      messages.value = result.comments // Charger les commentaires directement
+      messages.value = result.comments
     } else {
       console.warn('Aucun commentaire trouvé ou réponse invalide', result)
     }
@@ -126,14 +124,13 @@ const loadCommentToTasks = async () => {
 const sendMessage = async () => {
   if (newMessage.value.trim() !== '') {
     const messageData = {
-      comment: newMessage.value, // Utilisation directe de la chaîne
-      idTask: taskId.value, // Assurez-vous que c'est l'ID de tâche correct
-      idUser: authStore.idUser, // ID de l'utilisateur connecté
-      username: authStore.username, // Nom de l'utilisateur connecté
-      Timetamps: new Date().toISOString(), // Ajouter la date et l'heure du message
+      comment: newMessage.value,
+      idTask: taskId.value,
+      idUser: authStore.idUser,
+      username: authStore.username,
+      Timetamps: new Date().toISOString(),
     }
 
-    // Appel à l'API pour ajouter le commentaire
     try {
       const response = await apiService.addComment(messageData)
       console.log("Réponse de l'API:", response)
@@ -147,7 +144,7 @@ const sendMessage = async () => {
 
       // Ajouter le message à la liste locale
       messages.value.push(messageData)
-      newMessage.value = '' // Réinitialiser le champ d'entrée
+      newMessage.value = ''
     } catch (error) {
       console.error('Error sending message:', error)
     }
@@ -155,29 +152,54 @@ const sendMessage = async () => {
 }
 
 // Écouter les nouveaux messages via Socket.IO
-// Écouter les nouveaux messages via Socket.IO
 const listenForMessages = () => {
-  proxy.$socket.on('newComment', (data) => {
-    if (data.idTask === taskId.value) {
-      // Ajouter la date et l'heure si elles ne sont pas déjà présentes
-      if (!data.createdAt) {
-        data.Timetamps = new Date().toISOString()
+  if (proxy.$socket) {
+    proxy.$socket.on('newComment', (data) => {
+      console.log('Nouveau message reçu:', data)
+      if (data.idTask === taskId.value) {
+        if (!data.Timetamps) {
+          data.Timetamps = new Date().toISOString()
+        }
+        messages.value.push(data)
       }
-      messages.value.push(data) // Ajouter le message reçu à la liste
-    }
-  })
+    })
+
+    proxy.$socket.on('error', (error) => {
+      console.error('Erreur de socket:', error)
+    })
+  } else {
+    console.error("SocketIO n'est pas initialisé")
+  }
 }
 
 onMounted(async () => {
   await loadCommentToTasks()
-  listenForMessages() // Écouter les nouveaux messages
+  await loadTaskDetails()
+
+  // Assurez-vous que la connexion est établie
+  if (proxy.$socket) {
+    proxy.$socket.connect()
+    proxy.$socket.on('connect', () => {
+      socketStatus.value = 'Connecté'
+      console.log('Connecté au serveur WebSocket')
+    })
+
+    proxy.$socket.on('connect_error', (err) => {
+      console.error('Erreur de connexion au socket:', err)
+    })
+
+    // Écouter les nouveaux messages
+    listenForMessages()
+  } else {
+    console.error("SocketIO n'est pas initialisé")
+  }
 })
 
 // Fonction pour charger les détails de la tâche
 const loadTaskDetails = async () => {
   try {
     const result = await apiService.getTaskById(taskId.value)
-    taskStore.setTaskLisByID(result) // Met à jour les détails de la tâche
+    taskStore.setTaskLisByID(result)
     task.value = result
   } catch (error) {
     console.error('Error loading task details:', error)
@@ -188,11 +210,21 @@ const loadTaskDetails = async () => {
 watch(
   () => route.params.id,
   (newId) => {
-    taskId.value = newId // Met à jour l'ID de la tâche
-    loadTaskDetails() // Charger les détails de la tâche lorsque l'ID change
+    taskId.value = newId
+    loadTaskDetails()
   },
   { immediate: true },
 )
+
+onBeforeUnmount(() => {
+  if (proxy.$socket) {
+    proxy.$socket.off('newComment')
+    proxy.$socket.off('connect')
+    proxy.$socket.off('error')
+    proxy.$socket.disconnect() // Déconnecter le socket lors de la destruction du composant
+    console.log('Socket déconnecté avant destruction du composant.')
+  }
+})
 </script>
 
 <style scoped>
