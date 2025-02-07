@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import router from '../../router'
+import { RouterLink } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
@@ -91,7 +92,9 @@ const loginUser = async () => {
           </div>
           <div class="flex items-center justify-between pt-4">
             <p>Don't have an account?</p>
-            <p class="text-blue-500 cursor-pointer hover:text-blue-700">Register</p>
+            <p class="text-blue-500 cursor-pointer hover:text-blue-700">
+              <RouterLink to="/register">Register</RouterLink>
+            </p>
           </div>
         </form>
       </div>
