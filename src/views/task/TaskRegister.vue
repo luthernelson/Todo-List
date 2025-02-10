@@ -28,15 +28,22 @@ const addNewTask = async () => {
   try {
     if (taskStore.selectedTask) {
       const currentTask = taskStore.selectedTask
-      const existingTodos = currentTask.todos || []
+      console.log('Current Task:', currentTask) // Vérifiez la tâche sélectionnée
+      const existingTodosMap = new Map(currentTask.todos.map((todo) => [todo.idTodo, todo]))
 
-      // Identifier les nouveaux todos
-      const newTodos = (newTask.value.todos || []).filter(
-        (newTodo) => !existingTodos.some((todo) => todo.idTodo === newTodo.idTodo),
-      )
+      // Identifier les nouveaux todos et les mettre à jour
+      const finalTodos = newTask.value.todos.map((newTodo) => {
+        const existingTodo = existingTodosMap.get(newTodo.idTodo)
+        if (existingTodo) {
+          // Si le todo existe, mettre à jour ses propriétés
+          return { ...existingTodo, title: newTodo.title, isCompled: newTodo.isCompled }
+        }
+        // Sinon, c'est un nouveau todo
+        return { title: newTodo.title, isCompled: newTodo.isCompled, idTodo: newTodo.idTodo }
+      })
 
       // Identifier les todos supprimés
-      const deletedTodos = existingTodos.filter(
+      const deletedTodos = currentTask.todos.filter(
         (todo) => !newTask.value.todos.some((newTodo) => newTodo.idTodo === todo.idTodo),
       )
 
@@ -45,37 +52,25 @@ const addNewTask = async () => {
         await handleDeleteTodo(currentTask.task.idTask, deletedTodo.idTodo)
       }
 
-      // Mettre à jour les todos existants
-      const updatedTodos = existingTodos.map((todo) => {
-        const updatedTodo = newTask.value.todos.find((newTodo) => newTodo.idTodo === todo.idTodo)
-        return {
-          ...todo,
-          title: updatedTodo?.title || todo.title,
-          isCompled: updatedTodo?.isCompled !== undefined ? updatedTodo.isCompled : todo.isCompled,
-        }
-      })
-
-      // Créer une liste finale sans duplication
-      const finalTodos = [
-        ...updatedTodos, // Tous les todos existants (mis à jour)
-        ...newTodos, // Uniquement les nouveaux todos
-      ]
-
       // Mise à jour de la tâche via l'API
       const result = await apiService.updateTask(currentTask.task.idTask, {
         ...newTaskData,
         todos: finalTodos,
       })
-      console.log('resutl.updateTask', result)
+      console.log('result.updateTask', result)
+
+      const updatedTask = {
+        task: {
+          idTask: currentTask.task.idTask,
+          title: newTaskData.title,
+          description: newTaskData.description,
+          isCompled: newTaskData.isCompled,
+        },
+        todos: finalTodos, // Utiliser la liste finale
+      }
 
       // Mise à jour de la tâche dans le store
-      taskStore.setSelectedTask({
-        idTask: currentTask.task.idTask,
-        title: newTaskData.title || currentTask.task.title, // ou currentTask.task.title si tu ne veux pas le modifier
-        description: newTaskData.description || currentTask.task.description,
-        todos: finalTodos,
-      })
-      await getAllTask()
+      taskStore.updatedSelecteTask(updatedTask) // Assurez-vous que la méthode est bien nommée
     } else {
       // Création d'une nouvelle tâche
       const createdTask = await apiService.addTask(newTaskData)
@@ -213,7 +208,7 @@ onBeforeMount(async () => {
         </div>
 
         <!-- Filtre (input + bouton rechercher collés) -->
-        <div class="flex items-center space-x-0">
+        <!--         <div class="flex items-center space-x-0">
           <div class="flex-1">
             <input
               type="text"
@@ -226,7 +221,7 @@ onBeforeMount(async () => {
           >
             Rechercher
           </button>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -317,8 +312,11 @@ onBeforeMount(async () => {
       v-if="taskStore.taskList.length === 0 && !taskStore.showForm"
       class="flex flex-col items-center justify-center text-center text-gray-600 h-60"
     >
-      <img src="@/assets/animations/alarme.gif" alt="Animation GIF" class="w-32 h-32 mb-4" />
-      <p class="text-xl">Aucune tâche disponible :(</p>
+      <img
+        src="@/assets/animations/task.png"
+        alt="Animation GIF"
+        class="w-[450px] h-[450px] mt-28 border-none"
+      />
     </div>
 
     <!-- Liste des tâches -->
@@ -341,7 +339,11 @@ onBeforeMount(async () => {
         @close="taskStore.showModal = false"
       >
       </Modal>
-      <UserModal :isVisible="taskStore.ismodalvisible" @close="taskStore.ismodalvisible = false">
+      <UserModal
+        :isVisible="taskStore.ismodalvisible"
+        :data="taskStore.selectedTask"
+        @close="taskStore.ismodalvisible = false"
+      >
       </UserModal>
     </div>
   </div>

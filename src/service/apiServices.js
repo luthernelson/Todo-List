@@ -134,7 +134,15 @@ export const apiService = {
         throw error
       })
   },
-
+  addUser(userData) {
+    return apiClient
+      .post('/user/adduser', userData)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error("Error lors de l'ajout d'un utilisateur'", error)
+        throw error
+      })
+  },
   //update task
   updateTask(id, payload) {
     return apiClient

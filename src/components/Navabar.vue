@@ -2,6 +2,14 @@
   <div>
     <!-- Barre de navigation principale -->
     <nav class="bg-blue-500 py-4 shadow-lg flex items-center justify-between px-4">
+      <div>
+        <img
+          src="../assets/images/logoApp4.png"
+          alt="logoApp"
+          class="h-12 border-none color-white"
+        />
+      </div>
+
       <!-- Menu horizontal pour moyens et grands écrans -->
       <ul class="hidden md:flex space-x-6 items-center justify-center flex-1">
         <RouterLink
@@ -12,11 +20,6 @@
         >
           Accueil
         </RouterLink>
-        <li>
-          <a href="#" class="text-white hover:text-blue-200 transition-colors duration-300">
-            A Propos
-          </a>
-        </li>
         <RouterLink
           to="/community"
           class="text-white hover:text-blue-200 transition-colors duration-300"

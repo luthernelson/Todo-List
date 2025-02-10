@@ -39,13 +39,19 @@ const numtodoisCompled = () => {
   return number // Retournez le nombre de todos complétés
 }
 
-const removeTask = () => {
-  // Fonction de suppression d'une tâche
+const removeTask = async () => {
   console.log('ID de la tâche à supprimer:', props.data.task.idTask) // Ajoutez un log pour vérifier l'ID
   const taskId = Number(props.data.task.idTask, 10)
+  try {
+    await apiService.removeTask(taskId)
+    taskStore.removeTask(taskId)
+    alert('La tâche a été supprimée avec succès.')
+  } catch (error) {
+    console.error('Erreur lors de la suppression:', error.response)
+  }
   emit('remove-tasks', taskId)
 }
-
+/*
 const handleShareTask = async () => {
   // Vérifiez si la tâche est sélectionnée
   const task = props.data.task
@@ -85,7 +91,7 @@ const handleShareTask = async () => {
     )
     task.isShared = false // Mettre à false en cas d'erreur
   }
-}
+} */
 </script>
 
 <template>
@@ -124,7 +130,7 @@ const handleShareTask = async () => {
             class="absolute bottom-1 right-0 flex space-x-2"
           >
             <button
-              @click="handleShareTask"
+              @click="$emit('open-user-modal', data)"
               class="text-red-500 hover:text-red-700 p-2 w-8 h-8 flex items-center justify-center rounded-md"
             >
               <i class="fa-solid fa-share" style="color: #1db927"></i>

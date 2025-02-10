@@ -63,6 +63,21 @@ export const useTaskStore = defineStore('taskStore', {
     updateSelectedTask(task) {
       this.selectedTask = task
     },
+
+    updatedSelecteTask(updatedTask) {
+      console.log('Updated Task received:', updatedTask)
+
+      const index = this.taskList.findIndex((task) => task.task.idTask === updatedTask.task.idTask)
+      console.log('Index of task to update:', index)
+
+      if (index !== -1) {
+        console.log('Task List before update:', this.taskList)
+        this.taskList.splice(index, 1, updatedTask) // Remplace l'objet entier
+        console.log('Task List after update:', this.taskList)
+      } else {
+        console.warn('Task not found in taskList')
+      }
+    },
     checkUserSelectedTask(task) {
       this.selectedTask = task
     },

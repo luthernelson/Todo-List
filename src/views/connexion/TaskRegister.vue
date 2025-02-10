@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import router from '../../router'
+import { apiService } from '@/service/apiServices'
 
 const email = ref('')
 const username = ref('')
@@ -21,7 +22,7 @@ const registerUser = async () => {
   }
 
   try {
-    await userStore.register({
+    await apiService.addUser({
       email: email.value,
       username: username.value,
       password: password.value,

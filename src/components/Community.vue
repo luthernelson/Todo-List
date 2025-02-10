@@ -12,34 +12,32 @@
 
     <!-- Zone principale pour le chat -->
     <main class="flex-1 chat-container bg-gray-100 p-6">
-      <!-- Zone d'affichage des messages -->
       <div class="messages overflow-y-auto h-[70vh] bg-white p-4 rounded-lg mb-4">
         <Task :data="task" v-if="task" />
 
-        <!-- Date en haut de la conversation -->
-        <div class="text-center text-gray-500 text-sm mb-4">
-          {{ formatDate(messages[0]?.createdAt) || "Aujourd'hui" }}
-        </div>
-
         <div class="flex-1 overflow-y-auto p-4">
-          <div
-            class="mt-8"
-            v-for="(message, index) in messages"
-            :key="index"
-            :class="[
-              'message p-4 rounded-lg mb-2',
-              message.idUser === authStore.idUser
-                ? 'bg-blue-100 text-blue-700 self-end'
-                : 'bg-gray-100 text-gray-800 self-start',
-            ]"
-          >
-            <strong>{{ message.idUser === authStore.idUser ? 'Moi' : message.username }}</strong
-            >: {{ message.comment }}
-            <!-- Heure sous chaque message -->
-            <div class="text-xs text-gray-500 mt-1">
-              {{ formatTime(message.Timetamps) }}
+          <template v-for="(date, index) in Object.keys(groupedMessages)" :key="index">
+            <div class="text-center text-gray-500 text-sm mb-2">
+              {{ date }}
+              <!-- Affiche la date -->
             </div>
-          </div>
+            <template v-for="(message, msgIndex) in groupedMessages[date]" :key="msgIndex">
+              <div
+                class="message p-4 rounded-lg mb-2"
+                :class="[
+                  message.idUser === authStore.idUser
+                    ? 'bg-blue-100 text-blue-700 self-end'
+                    : 'bg-gray-100 text-gray-800 self-start',
+                ]"
+              >
+                <strong>{{ message.idUser === authStore.idUser ? 'Moi' : message.username }}</strong
+                >: {{ message.comment }}
+                <div class="text-xs text-gray-500 mt-1">
+                  {{ formatTime(message.Timetamps) }}
+                </div>
+              </div>
+            </template>
+          </template>
         </div>
       </div>
 
@@ -77,13 +75,11 @@ const task = ref(null)
 const authStore = useUserStore()
 const { proxy } = getCurrentInstance()
 const socketStatus = ref('Déconnecté')
-
-// Liste des membres de la communauté
+const displayedDates = new Set() // Utilisation d'un Set pour stocker les dates affichées
 const members = ref(['Nelson Luther', 'Bob', 'Charlie', 'David', 'Eve'])
-
-// Déclaration des variables réactives pour le chat
 const messages = ref([])
 const newMessage = ref('')
+const groupedMessages = ref({}) // Un objet pour stocker les messages regroupés par date
 
 // Fonction pour formater la date (ex: "Aujourd'hui")
 const formatDate = (dateString) => {
@@ -96,7 +92,7 @@ const formatDate = (dateString) => {
     date.getFullYear() === today.getFullYear()
   return isToday
     ? "Aujourd'hui"
-    : date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+    : date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 // Fonction pour formater l'heure (ex: "14:30")
@@ -112,6 +108,7 @@ const loadCommentToTasks = async () => {
     const result = await apiService.getCommentById(taskId.value)
     if (result.comments && Array.isArray(result.comments)) {
       messages.value = result.comments
+      groupMessagesByDate() // Regrouper les messages après les avoir chargés
     } else {
       console.warn('Aucun commentaire trouvé ou réponse invalide', result)
     }
@@ -144,11 +141,24 @@ const sendMessage = async () => {
 
       // Ajouter le message à la liste locale
       messages.value.push(messageData)
+      groupMessagesByDate() // Regrouper après l'ajout d'un nouveau message
       newMessage.value = ''
     } catch (error) {
       console.error('Error sending message:', error)
     }
   }
+}
+
+// Fonction pour regrouper les messages par date
+const groupMessagesByDate = () => {
+  groupedMessages.value = {} // Réinitialiser l'objet
+  messages.value.forEach((message) => {
+    const dateKey = formatDate(message.Timetamps) // Utiliser formatDate pour obtenir la date
+    if (!groupedMessages.value[dateKey]) {
+      groupedMessages.value[dateKey] = []
+    }
+    groupedMessages.value[dateKey].push(message)
+  })
 }
 
 // Écouter les nouveaux messages via Socket.IO
@@ -161,6 +171,7 @@ const listenForMessages = () => {
           data.Timetamps = new Date().toISOString()
         }
         messages.value.push(data)
+        groupMessagesByDate() // Regrouper après l'ajout d'un nouveau message
       }
     })
 
@@ -175,8 +186,6 @@ const listenForMessages = () => {
 onMounted(async () => {
   await loadCommentToTasks()
   await loadTaskDetails()
-
-  // Assurez-vous que la connexion est établie
   if (proxy.$socket) {
     proxy.$socket.connect()
     proxy.$socket.on('connect', () => {
@@ -188,7 +197,6 @@ onMounted(async () => {
       console.error('Erreur de connexion au socket:', err)
     })
 
-    // Écouter les nouveaux messages
     listenForMessages()
   } else {
     console.error("SocketIO n'est pas initialisé")
