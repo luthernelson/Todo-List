@@ -5,7 +5,7 @@
     <li class="me-2">
       <a
         href="#"
-        @click.prevent="setActiveTab('profile')"
+        @click="setActiveTab('profile')"
         :class="[
           'inline-block p-4',
           activeTab === 'profile'
@@ -19,7 +19,7 @@
     <li class="me-2">
       <a
         href="#"
-        @click.prevent="setActiveTab('dashboard')"
+        @click="setActiveTab('dashboard')"
         :class="[
           'inline-block p-4',
           activeTab === 'dashboard'
@@ -36,11 +36,11 @@
     class="w-full h-full flex flex-col justify-center items-center px-4 sm:px-8 md:px-12 lg:px-20 pt-8 bg-white"
   >
     <div
-      v-if="!taskStore.showForm && activeTab === 'profile' && taskStore.taskList.length > 0"
+      v-if="!taskStore.showForm && activeTab === 'profile' && taskStore.sharedTaskList.length > 0"
       class="w-full max-w-[1800px] grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-1"
     >
       <Task
-        v-for="(task, index) in taskStore.taskList"
+        v-for="(task, index) in taskStore.sharedTaskList"
         :key="index"
         :data="task"
         @open-modal="taskStore.openModal(task)"
@@ -48,7 +48,11 @@
         @open-update-modal="handleUpdateTask(task)"
         @remove-tasks="handleDeleteTask(task.task.idTask)"
       />
-      <div v-if="!taskStore.showForm && activeTab === 'profile' && taskStore.taskList.length === 0">
+      <div
+        v-if="
+          !taskStore.showForm && activeTab === 'profile' && taskStore.sharedTaskList.length === 0
+        "
+      >
         <p>Aucune tâche disponible.</p>
       </div>
     </div>
@@ -63,25 +67,26 @@
         :data="task"
         @open-chat="openChat(task.task.idTask)"
       />
-    </div>
-
-    <div
-      v-if="
-        !taskStore.showForm && activeTab === 'dashboard' && taskStore.sharedTaskList.length === 0
-      "
-    >
-      <p>Aucune tâche partagée disponible.</p>
+      <div
+        v-if="
+          !taskStore.showForm && activeTab === 'dashboard' && taskStore.sharedTaskList.lenght === 0
+        "
+      >
+        <p>Aucune tâche partagée disponible.</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Task from '../../components/Task.vue'
 import { useTaskStore } from '../../stores/taskStore'
 import { apiService } from '@/service/apiServices'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '../../stores/userStore'
 
+const authStore = useUserStore() // Utilisation du store d'authentification pour obtenir l'idUser
 const taskStore = useTaskStore()
 const activeTab = ref('profile') // Onglet actif par défaut
 
@@ -98,27 +103,35 @@ function setActiveTab(tab) {
 }
 
 const loadTasks = async (tab) => {
-  if (tab === 'profile') {
-    // Charger Mes Tâches
-    try {
-      const result = await apiService.getTasks() // Méthode pour obtenir Mes Tâches
-      console.log('Mes Tâches:', result)
-      taskStore.setTaskList(result) // Met à jour la liste des tâches
-    } catch (e) {
-      console.error('loadMyTasks.error >> ', e)
+  try {
+    let result = []
+
+    if (tab === 'profile') {
+      // Charger Mes Tâches : filtrer directement ici
+      result = await apiService.getsharedTasks() // Méthode pour obtenir Mes Tâches
+      result = result.filter((task) => task.task.idUser == authStore.idUser) // Filtre sur les tâches créées par l'utilisateur connecté
+    } else if (tab === 'dashboard') {
+      console.log('dashboard')
+      // Charger Tâches Partagées : filtrer directement ici
+      result = await apiService.getsharedTasks() // Méthode pour obtenir les Tâches Partagées
+      console.log('authStore.idUser', authStore.idUser)
+      result = result.filter(
+        (task) =>
+          task.sharedWith.some((user) => user.idUser == authStore.idUser) && // Vérifie si l'utilisateur est dans sharedWith
+          task.task.idUser != authStore.idUser, // Exclut les tâches partagées par l'utilisateur connecté lui-même
+      )
+      console.log('result', result)
     }
-  } else if (tab === 'dashboard') {
-    // Charger Tâches Partagées
-    try {
-      const result = await apiService.getsharedTasks() // Méthode pour obtenir les Tâches Partagées
-      console.log('Tâches Partagées:', result)
-      taskStore.setSharedTaskList(result) // Met à jour la liste des tâches partagées
-    } catch (e) {
-      console.error('loadSharedTasks.error >> ', e)
-    }
-    console.log('sharedtaskList:', taskStore.sharedTaskList)
+
+    // Met à jour la liste des tâches filtrées dans le store
+    taskStore.setSharedTaskList(result)
+  } catch (e) {
+    console.error('loadTasks.error >> ', e)
   }
 }
+onMounted(async () => {
+  loadTasks(activeTab.value) // Charge les tâches au montage
+})
 </script>
 
 <style scoped>

@@ -10,6 +10,7 @@ export const useTaskStore = defineStore('taskStore', {
     showForm: false,
     showModal: false,
     selectedTask: null,
+    selectedUserIds: [],
     showUpdateModal: false,
     UsersList: [],
     ismodalvisible: false,
@@ -63,6 +64,9 @@ export const useTaskStore = defineStore('taskStore', {
     updateSelectedTask(task) {
       this.selectedTask = task
     },
+    updateSelectedUserTask(users) {
+      this.selectedUserIds = users
+    },
 
     updatedSelecteTask(updatedTask) {
       console.log('Updated Task received:', updatedTask)
@@ -103,7 +107,8 @@ export const useTaskStore = defineStore('taskStore', {
       this.selectedTask = task
       this.showModal = true
     },
-    openUserModal() {
+    openUserModal(task) {
+      this.selectedTask = task
       this.ismodalvisible = true
     },
 
@@ -135,6 +140,19 @@ export const useTaskStore = defineStore('taskStore', {
       // console.log('taskList after set task list', comments)
       // this.CalculateCompletionPercentage();
     },
+    // Méthode pour ajouter un utilisateur
+    addSelectedUser(userId) {
+      if (!this.selectedUserIds.includes(userId)) {
+        // Pas besoin de .value ici
+        this.selectedUserIds.push(userId)
+      }
+    },
+
+    // Méthode pour retirer un utilisateur
+    removeSelectedUser(userId) {
+      this.selectedUserIds = this.selectedUserIds.filter((id) => id !== userId) // Pas besoin de .value ici
+    },
+
     // Réinitialiser les tâches lors de la déconnexion
     /*     resetTasksOnLogout() {
       this.taskList = [] // Vider la liste des tâches

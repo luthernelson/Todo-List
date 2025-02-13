@@ -3,7 +3,7 @@ import { useTaskStore } from '../../stores/taskStore'
 import Task from '../../components/Task.vue'
 import Modal from '../../components/Modal.vue'
 import UserModal from '../../components/ModalUser.vue'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, onMounted } from 'vue'
 import { apiService } from '@/service/apiServices'
 
 const taskStore = useTaskStore()
@@ -184,6 +184,9 @@ onBeforeMount(async () => {
   console.log('taskStore.taskList ', taskStore.taskList)
   taskStore.setTaskList(taskList)
 })
+onMounted(async () => {
+  await getAllTask()
+})
 </script>
 
 <template>
@@ -315,7 +318,7 @@ onBeforeMount(async () => {
       <img
         src="@/assets/animations/task.png"
         alt="Animation GIF"
-        class="w-[450px] h-[450px] mt-28 border-none"
+        class="w-[450px] h-[450px] mt-36 border-none"
       />
     </div>
 
@@ -329,7 +332,7 @@ onBeforeMount(async () => {
         :key="index"
         :data="task"
         @open-modal="taskStore.openModal(task)"
-        @open-user-modal="taskStore.openUserModal()"
+        @open-user-modal="taskStore.openUserModal(task)"
         @open-update-modal="handleUpdateTask(task)"
         @remove-tasks="handleDeleteTask(task.task.idTask)"
       />

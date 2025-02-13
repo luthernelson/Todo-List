@@ -75,7 +75,6 @@ const task = ref(null)
 const authStore = useUserStore()
 const { proxy } = getCurrentInstance()
 const socketStatus = ref('Déconnecté')
-const displayedDates = new Set() // Utilisation d'un Set pour stocker les dates affichées
 const members = ref(['Nelson Luther', 'Bob', 'Charlie', 'David', 'Eve'])
 const messages = ref([])
 const newMessage = ref('')

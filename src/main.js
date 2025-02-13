@@ -6,11 +6,13 @@ import '@fortawesome/fontawesome-free/js/all.js'
 import App from './App.vue'
 import router from './router'
 import './index.css'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import { useAuth } from './stores/userStore' // Importez la fonction useAuth
 
 const app = createApp(App) // Créez une instance de l'application
 
 const pinia = createPinia() // Créez une instance de Pinia
-
+pinia.use(piniaPluginPersistedstate)
 app.use(pinia) // Associez Pinia à l'application
 app.use(router) // Associer routeur à l'application
 
@@ -25,5 +27,8 @@ socket.on('connect_error', (err) => {
 })
 
 app.config.globalProperties.$socket = socket
+
+// Vérifiez l'authentification au démarrage de l'application
+useAuth()
 
 app.mount('#app') // Montez l'application

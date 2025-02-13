@@ -1,36 +1,38 @@
 <script setup>
-import { defineProps, defineEmits, ref, onMounted } from 'vue'
+import { defineProps, defineEmits, onMounted } from 'vue'
 import { useTaskStore } from '@/stores/taskStore'
 import { apiService } from '@/service/apiServices'
+import { computed } from 'vue'
 
 const taskStore = useTaskStore()
 // Définition des props du modal
+
+const selectedUserIds = computed(() => taskStore.selectedUserIds)
 const props = defineProps({
   isVisible: {
     type: Boolean,
     required: true,
   },
-  data: {
-    required: true,
-    type: Object,
-  },
+  data: Object,
 })
 
 // Définition des événements
 const emit = defineEmits(['close'])
-const selectedUserIds = ref([]) // Tableau pour les utilisateurs sélectionnés
-
+console.log('props.data', props.data)
 const blueBtn =
   'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'
 const grayBtn =
   'py-2.5 px-5 me-2 mb-2 text-sm font-medium text-slate-900 focus:outline-none bg-white rounded-lg border border-slate-200 focus:z-10 focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-600'
 
 // Méthode pour fermer le modal
+let previouslySelectedUserIds = []
 const closeModal = () => {
+  previouslySelectedUserIds = [...taskStore.selectedUserIds] // Conserver la sélection actuelle avant de réinitialiser
+  taskStore.updateSelectedUserTask(null)
   selectedUserIds.value = [] // Réinitialiser les utilisateurs sélectionnés
   emit('close')
 }
-
+  
 // Charger les utilisateurs depuis l'API et les stocker dans le store
 const loadUsers = async () => {
   try {
@@ -43,26 +45,37 @@ const loadUsers = async () => {
 }
 
 // Gérer la sélection des utilisateurs
-const handleUserCheck = (userId) => {
-  if (selectedUserIds.value.includes(userId)) {
-    selectedUserIds.value = selectedUserIds.value.filter((id) => id !== userId) // Retirer l'utilisateur
+const handleUserCheck = (idUser) => {
+  if (taskStore.selectedUserIds.includes(idUser)) {
+    // Retirer l'utilisateur sélectionné
+    taskStore.removeSelectedUser(idUser)
   } else {
-    selectedUserIds.value.push(userId) // Ajouter l'utilisateur
+    // Ajouter l'utilisateur sélectionné
+    taskStore.addSelectedUser(idUser)
   }
+
+  console.log('Utilisateurs sélectionnés:', taskStore.selectedUserIds)
 }
 
 // Partager la tâche avec les utilisateurs sélectionnés
 const handleShareTask = async () => {
-  const task = props.data.task
-  if (!task || !task.idTask || selectedUserIds.value.length === 0) {
-    console.warn('Aucune tâche sélectionnée ou aucun utilisateur sélectionné pour le partage.')
+  console.log('props.data:', props.data) // Vérification de props.data
+  if (!props.data.task || !props.data.task.idTask) {
+    console.warn('Aucune tâche sélectionnée !')
+    return
+  }
+
+  if (taskStore.selectedUserIds.length === 0) {
+    console.warn('Aucun utilisateur sélectionné pour le partage.')
     return
   }
 
   const taskToShare = {
-    idTask: task.idTask,
-    idUser: selectedUserIds.value, // Inclure les utilisateurs sélectionnés
-    title: task.title,
+    idTask: props.data.task.idTask,
+    idUser: taskStore.selectedUserIds,
+    title: props.data.task.title, // Utilisation des ID stockés dans le store
+    description: props.data.task.description,
+    isCompled: props.data.task.isCompled,
     isShared: true,
   }
 
@@ -71,28 +84,24 @@ const handleShareTask = async () => {
   try {
     const result = await apiService.shareTask(taskToShare)
     taskStore.updateAfterShare(result)
-
-    if (result && result.isShared !== undefined) {
-      task.isShared = result.isShared
-    } else {
-      task.isShared = true
-    }
-
+    // Mettre à jour le store après partage
+    alert('Tâche partagée avec succès.')
     console.log('Tâche partagée avec succès:', result)
-    // Réinitialiser la sélection après le partage
-    selectedUserIds.value = []
-    emit('close') // Fermer le modal après partage
+    taskStore.selectedUserIds = []
+    closeModal() // Fermer le modal après partage
   } catch (error) {
-    console.error(
-      'Erreur lors du partage des tâches:',
-      error.response ? error.response.data : error,
-    )
-    task.isShared = false
+    console.error('Erreur lors du partage des tâches:', error.response?.data || error)
   }
 }
 
 // Charger les utilisateurs lors du montage du composant
-onMounted(loadUsers)
+onMounted(() => {
+  loadUsers()
+  // Récupérer la sélection précédente lors de l'ouverture du modal
+  if (props.isVisible) {
+    taskStore.selectedUserIds = [...previouslySelectedUserIds]
+  }
+})
 </script>
 
 <template>
@@ -119,9 +128,15 @@ onMounted(loadUsers)
         <div class="modal-body p-4">
           <!-- Liste des utilisateurs à partager -->
           <h3 class="text-lg font-semibold mt-4">Sélectionnez les utilisateurs à partager:</h3>
-          <ul class="list-disc pl-6 space-y-2">
+          <ul class="pl-6 space-y-2">
             <li v-for="users in taskStore.UsersList" :key="users.idUser">
-              <input type="checkbox" class="mr-2" @change="handleUserCheck(users.idUser)" />
+              <input
+                type="checkbox"
+                class="mr-2 w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                :value="users.idUser"
+                :checked="taskStore.selectedUserIds.includes(users.idUser)"
+                @change="handleUserCheck(users.idUser)"
+              />
               {{ users.username }}
             </li>
           </ul>

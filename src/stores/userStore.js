@@ -3,71 +3,72 @@ import { useStorage } from '@vueuse/core'
 import { apiService, setAuthToken } from '@/service/apiServices'
 import router from '@/router'
 
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore('auth', {
   state: () => ({
-    isAuthenticated: false,
-    user: useStorage('user', null), // Objet utilisateur
-    token: useStorage('token', null), // Jeton d'authentification
-    lastRoute: useStorage('lastRoute', null), // Dernière route visitée
-    idUser: useStorage('idUser', null), // ID de l'utilisateur
-    username: useStorage('username', null), // Nom d'utilisateur
+    user: useStorage('user', null, sessionStorage), // Objet utilisateur persistant
+    token: useStorage('token', null, sessionStorage), // Jeton d'authentification persistant
+    lastRoute: useStorage('lastRoute', null, sessionStorage), // Dernière route visitée
+    idUser: useStorage('idUser', null, sessionStorage), // ID de l'utilisateur
+    username: useStorage('username', null, sessionStorage), // Nom d'utilisateur
   }),
 
   getters: {
-    isLoggedIn: (state) => !!state.user,
+    isLoggedIn: (state) => !!state.user, // Vérifie si l'utilisateur est connecté
   },
 
   actions: {
     checkAuth() {
       const token = this.token
       if (token) {
-        setAuthToken(token) // Configurer le token pour les requêtes futures
-        // Optionnel : récupérer les informations de l'utilisateur depuis le serveur
-        // this.getUserFromToken(token);
+        setAuthToken(token) // Configure le jeton pour les requêtes futures
       }
     },
+
     async login(email, password) {
       try {
         const { users, token, idUser, username } = await apiService.login(email, password)
         this.user = users
         this.token = token
-        this.idUser = idUser // Mettez à jour l'ID de l'utilisateur
-        this.username = username // Mettez à jour le nom d'utilisateur
-        this.isAuthenticated = true
+        this.idUser = idUser
+        this.username = username
         setAuthToken(token)
-        console.log('Utilisateur connecté :', users)
-        console.log('ID de l’utilisateur connecté:', this.idUser) // Log de l'ID de l'utilisateur
-        console.log('username de l’utilisateur connecté:', this.username)
-        const lastRoute = sessionStorage.getItem('lastRoute') || '/'
+        console.log('Utilisateur connecté :', users)
+        const lastRoute = this.lastRoute || '/'
         router.push(lastRoute)
       } catch (error) {
-        console.error("Erreur lors de l'authentification:", error)
+        console.error("Erreur d'authentification :", error)
         throw new Error('Échec de la connexion. Veuillez vérifier vos identifiants.')
       }
     },
 
     logout() {
-      this.users = null
+      this.user = null
       this.token = null
       setAuthToken(null)
-      this.isAuthenticated = false
-      sessionStorage.removeItem('lastRoute') // Supprimer la dernière route du sessionStorage
+      this.lastRoute = null // Efface la dernière route
       router.push('/login')
     },
 
     setLastRoute(route) {
-      sessionStorage.setItem('lastRoute', route) // Enregistrer la dernière route dans sessionStorage
-      console.log('Dernière route enregistrée:', route) // Débogage
+      this.lastRoute = route // Enregistre la dernière route
+      console.log('Dernière route enregistrée :', route) // Débogage
     },
   },
 })
-// Assurez-vous que cette fonction est bien exportée
+
+// Fonction pour initialiser l'authentification
 export function useAuth() {
-  const userStore = useUserStore()
-  userStore.checkAuth() // Vérifier l'authentification à l'initialisation
-  // Rediriger l'utilisateur vers la dernière route visitée s'il est déjà authentifié
-  if (userStore.isLoggedIn && userStore.lastRoute) {
-    router.push(userStore.lastRoute)
+  const authStore = useUserStore()
+  authStore.checkAuth() // Vérifie l'authentification à l'initialisation
+
+  // Redirige vers la dernière route visitée si déjà authentifié
+  if (authStore.isLoggedIn) {
+    const lastRoute = authStore.lastRoute || '/' // Utilise la page d'accueil par défaut
+    if (lastRoute) {
+      router.push(lastRoute)
+    } else {
+      router.push('/') // Redirection vers la page d'accueil si lastRoute est nul
+    }
   }
-  return userStore
+  return authStore
 }

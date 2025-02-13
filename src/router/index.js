@@ -33,20 +33,23 @@ const router = createRouter({
     },
   ],
 })
-// Middleware pour les routes protégées
 router.beforeEach((to, from, next) => {
-  const userStore = useUserStore()
+  const authStore = useUserStore()
 
   // Vérifier si la route nécessite une authentification
-  if (to.meta.requiresAuth && !userStore.isLoggedIn) {
-    // Rediriger vers la page de login avec un paramètre de redirection
+  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+    // Rediriger vers la page de login
     next({ path: '/login', query: { redirect: to.fullPath } })
   } else {
-    // Enregistrer la dernière route visitée uniquement si l'utilisateur est connecté
-    if (userStore.isLoggedIn) {
-      userStore.setLastRoute(to.path)
+    // Si l'utilisateur est authentifié et que la route ne nécessite pas d'authentification,
+    // rediriger vers la dernière route visitée
+    if (authStore.isLoggedIn && from.path === '/login') {
+      next({ path: authStore.lastRoute })
+    } else {
+      // Enregistrer la dernière route visitée
+      authStore.lastRoute = to.fullPath
+      next()
     }
-    next()
   }
 })
 export default router

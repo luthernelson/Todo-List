@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeMount } from 'vue'
+import { computed, onBeforeMount, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
 import Navabar from './components/Navabar.vue'
 import router from './router'
@@ -22,6 +22,15 @@ initData()
 onBeforeMount(() => {
   if (!isLogin.value) {
     router.push('/login')
+  }
+})
+
+onMounted(() => {
+  const lastRoute = sessionStorage.getItem('lastRoute')
+  const token = sessionStorage.getItem('token')
+  if (token) {
+    console.log('lastRoute', lastRoute)
+    router.push(lastRoute)
   }
 })
 </script>
