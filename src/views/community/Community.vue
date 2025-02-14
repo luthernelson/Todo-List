@@ -47,6 +47,7 @@
         @open-user-modal="taskStore.openUserModal()"
         @open-update-modal="handleUpdateTask(task)"
         @remove-tasks="handleDeleteTask(task.task.idTask)"
+        @open-chat="openChat(task.task.idTask)"
       />
       <div
         v-if="

@@ -1,13 +1,13 @@
 <script setup>
-import { defineProps, defineEmits, onMounted } from 'vue'
+import { defineProps, defineEmits, onMounted, ref, watch } from 'vue'
 import { useTaskStore } from '@/stores/taskStore'
 import { apiService } from '@/service/apiServices'
 import { computed } from 'vue'
 
 const taskStore = useTaskStore()
+const canUpdate = ref(false)
 // Définition des props du modal
-
-const selectedUserIds = computed(() => taskStore.selectedUserIds)
+const userSelectionState = ref({}) // Stocke l'état des utilisateurs
 const props = defineProps({
   isVisible: {
     type: Boolean,
@@ -18,6 +18,14 @@ const props = defineProps({
 
 // Définition des événements
 const emit = defineEmits(['close'])
+// Récupère l'ID de la tâche en cours
+const taskId = computed(() => props.data?.task?.idTask || null)
+
+const selectedUserIds = computed(() => {
+  if (!taskId.value) return []
+  return taskStore.selectedTaskUsers[taskId.value] || []
+})
+
 console.log('props.data', props.data)
 const blueBtn =
   'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'
@@ -25,14 +33,20 @@ const grayBtn =
   'py-2.5 px-5 me-2 mb-2 text-sm font-medium text-slate-900 focus:outline-none bg-white rounded-lg border border-slate-200 focus:z-10 focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-600'
 
 // Méthode pour fermer le modal
-let previouslySelectedUserIds = []
 const closeModal = () => {
-  previouslySelectedUserIds = [...taskStore.selectedUserIds] // Conserver la sélection actuelle avant de réinitialiser
-  taskStore.updateSelectedUserTask(null)
-  selectedUserIds.value = [] // Réinitialiser les utilisateurs sélectionnés
+  canUpdate.value = false
   emit('close')
 }
-  
+// Charger l'état des utilisateurs pour la tâche sélectionnée
+const loadTaskUsers = () => {
+  if (taskId.value) {
+    const selectedUsers = taskStore.getSelectedUsers(taskId.value)
+    userSelectionState.value = {} // Réinitialiser avant de charger
+    selectedUsers.forEach((id) => {
+      userSelectionState.value[id] = true
+    })
+  }
+}
 // Charger les utilisateurs depuis l'API et les stocker dans le store
 const loadUsers = async () => {
   try {
@@ -45,16 +59,20 @@ const loadUsers = async () => {
 }
 
 // Gérer la sélection des utilisateurs
+// Gestion des checkbox utilisateur
 const handleUserCheck = (idUser) => {
-  if (taskStore.selectedUserIds.includes(idUser)) {
-    // Retirer l'utilisateur sélectionné
-    taskStore.removeSelectedUser(idUser)
+  console.log('ID utilisateur sélectionné:', idUser)
+  console.log('État avant modification:', JSON.parse(JSON.stringify(userSelectionState.value)))
+
+  if (userSelectionState.value[idUser]) {
+    taskStore.removeSelectedUser(taskId.value, idUser)
+    userSelectionState.value[idUser] = false
   } else {
-    // Ajouter l'utilisateur sélectionné
-    taskStore.addSelectedUser(idUser)
+    taskStore.addSelectedUser(taskId.value, idUser)
+    userSelectionState.value[idUser] = true
   }
 
-  console.log('Utilisateurs sélectionnés:', taskStore.selectedUserIds)
+  console.log('Utilisateurs sélectionnés dans le store:', taskStore.selectedTaskUsers[taskId.value])
 }
 
 // Partager la tâche avec les utilisateurs sélectionnés
@@ -65,14 +83,14 @@ const handleShareTask = async () => {
     return
   }
 
-  if (taskStore.selectedUserIds.length === 0) {
+  if (selectedUserIds.value.length === 0) {
     console.warn('Aucun utilisateur sélectionné pour le partage.')
     return
   }
 
   const taskToShare = {
-    idTask: props.data.task.idTask,
-    idUser: taskStore.selectedUserIds,
+    idTask: taskId.value,
+    idUser: selectedUserIds.value,
     title: props.data.task.title, // Utilisation des ID stockés dans le store
     description: props.data.task.description,
     isCompled: props.data.task.isCompled,
@@ -93,14 +111,16 @@ const handleShareTask = async () => {
     console.error('Erreur lors du partage des tâches:', error.response?.data || error)
   }
 }
-
+// Charger l'état à l'ouverture du modal
+watch(taskId, (newTaskId) => {
+  if (newTaskId) {
+    loadTaskUsers()
+  }
+})
 // Charger les utilisateurs lors du montage du composant
 onMounted(() => {
   loadUsers()
-  // Récupérer la sélection précédente lors de l'ouverture du modal
-  if (props.isVisible) {
-    taskStore.selectedUserIds = [...previouslySelectedUserIds]
-  }
+  loadTaskUsers()
 })
 </script>
 
@@ -134,8 +154,12 @@ onMounted(() => {
                 type="checkbox"
                 class="mr-2 w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 :value="users.idUser"
-                :checked="taskStore.selectedUserIds.includes(users.idUser)"
-                @change="handleUserCheck(users.idUser)"
+                :checked="userSelectionState[users.idUser] || false"
+                @click="
+                  () => {
+                    handleUserCheck(users.idUser)
+                  }
+                "
               />
               {{ users.username }}
             </li>

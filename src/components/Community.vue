@@ -61,13 +61,14 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, getCurrentInstance, onBeforeUnmount } from 'vue'
+import { ref, watch, onMounted, getCurrentInstance, onBeforeUnmount, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { apiService } from '@/service/apiServices'
 import { useTaskStore } from '@/stores/taskStore'
 import { useUserStore } from '@/stores/userStore'
 import Task from './Task.vue'
 
+const sharedUsers = ref([])
 const taskStore = useTaskStore()
 const route = useRoute()
 const taskId = ref(route.params.id)
@@ -75,10 +76,45 @@ const task = ref(null)
 const authStore = useUserStore()
 const { proxy } = getCurrentInstance()
 const socketStatus = ref('Déconnecté')
-const members = ref(['Nelson Luther', 'Bob', 'Charlie', 'David', 'Eve'])
 const messages = ref([])
 const newMessage = ref('')
 const groupedMessages = ref({}) // Un objet pour stocker les messages regroupés par date
+
+const loadSharedUsers = async () => {
+  try {
+    const response = await apiService.getsharedTasks() // Appel à l'API pour récupérer les tâches partagées
+    console.log("Réponse complète de l'API:", response) // Affiche la réponse complète pour vérifier la structure
+
+    // Vérifie si la réponse est correctement structurée
+    if (response && Array.isArray(response)) {
+      console.log('Liste des tâches partagées:', response)
+
+      // Vérifie l'ID de la tâche et compare-le avec l'ID de la route
+      console.log('ID de la tâche recherchée:', taskId.value)
+
+      // Recherche la tâche avec l'ID de la tâche actuelle
+      const tasks = response.find((t) => t.task.idTask == taskId.value)
+
+      if (tasks) {
+        // Si la tâche est trouvée, on récupère les utilisateurs partagés
+        if (tasks.sharedWith && tasks.sharedWith.length > 0) {
+          sharedUsers.value = tasks.sharedWith // Récupère uniquement les utilisateurs partagés
+          console.log('Utilisateurs partagés:', sharedUsers.value)
+        } else {
+          console.warn("Aucun utilisateur trouvé dans 'sharedWith' pour la tâche", taskId.value)
+        }
+      } else {
+        console.warn("Aucune tâche trouvée avec l'idTask", taskId.value)
+      }
+    } else {
+      console.error('La réponse ne contient pas de tableau ou est mal structurée.')
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération des utilisateurs partagés:', error)
+  }
+}
+
+const members = computed(() => sharedUsers.value.map((user) => user.username))
 
 // Fonction pour formater la date (ex: "Aujourd'hui")
 const formatDate = (dateString) => {
@@ -185,6 +221,7 @@ const listenForMessages = () => {
 onMounted(async () => {
   await loadCommentToTasks()
   await loadTaskDetails()
+  await loadSharedUsers()
   if (proxy.$socket) {
     proxy.$socket.connect()
     proxy.$socket.on('connect', () => {
