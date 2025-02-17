@@ -1,7 +1,7 @@
 // src/services/apiService.js
 import axios from 'axios'
 
-const API_URL = 'http://localhost:3001/api' // Base URL for your API
+const API_URL = 'https://api-task-ar3g.onrender.com/api' // Base URL for your API
 
 // Create an instance of axios
 const apiClient = axios.create({

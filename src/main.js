@@ -16,7 +16,7 @@ pinia.use(piniaPluginPersistedstate)
 app.use(pinia) // Associez Pinia à l'application
 app.use(router) // Associer routeur à l'application
 
-const socket = io('http://localhost:3001') // Remplacez par votre URL de serveur
+const socket = io('https://api-task-ar3g.onrender.com') // Remplacez par votre URL de serveur
 // Gérer les événements de connexion
 socket.on('connect', () => {
   console.log('Connecté au serveur WebSocket')
