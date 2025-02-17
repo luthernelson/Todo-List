@@ -23,8 +23,13 @@
       >
         Communauté
       </RouterLink>
+      <li
+        class="text-orange-200 duration-300 transition-all text-lg font-extrabold cursor-pointer"
+        @click="taskStore.toggleForm"
+      >
+        + Nouvelle tâche
+      </li>
     </ul>
-
     <!-- Icône utilisateur et bouton de déconnexion (desktop) -->
     <div class="hidden md:flex items-center space-x-6">
       <RouterLink to="/login">
@@ -77,6 +82,12 @@
         >
           <i class="fa-solid fa-people-group mr-2"></i>Communauté
         </RouterLink>
+        <li
+          class="text-orange-200 duration-300 transition-all px-4 py-2 text-lg font-extrabold cursor-pointer"
+          @click="taskStore.toggleForm"
+        >
+          + Nouvelle tâche
+        </li>
       </ul>
 
       <!-- Bouton de déconnexion (mobile) : Icône au lieu du texte -->
@@ -91,11 +102,12 @@
 import { useUserStore } from '@/stores/userStore'
 import { RouterLink } from 'vue-router'
 import { ref } from 'vue'
+import { useTaskStore } from '../stores/taskStore'
 
 const userStore = useUserStore()
 const isMenuOpen = ref(false)
 const activeLink = ref('/')
-
+const taskStore = useTaskStore()
 function setActiveLink(link) {
   activeLink.value = link
   isMenuOpen.value = false // Ferme le menu après sélection

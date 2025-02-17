@@ -201,7 +201,7 @@ onMounted(async () => {
           LISTE DES TACHES
         </h1>
         <!-- Bouton de création de tâche -->
-        <div class="flex justify-end mb-4 mt-8">
+        <!--       <div class="flex justify-end mb-4 mt-8">
           <button
             @click="taskStore.toggleForm"
             class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-all"
@@ -209,7 +209,7 @@ onMounted(async () => {
             Créer une nouvelle tâche
           </button>
         </div>
-
+ -->
         <!-- Filtre (input + bouton rechercher collés) -->
         <!--         <div class="flex items-center space-x-0">
           <div class="flex-1">
