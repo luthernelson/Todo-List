@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen">
     <div v-if="loading" class="loader"></div>
-    <div v-else>
+    <div v-else class="flex h-screen justify-center items-center">
       <!-- Loader ici -->
       <!-- Barre verticale pour les membres -->
       <aside class="w-1/4 bg-gray-800 text-white p-4 overflow-y-auto">
@@ -337,8 +337,8 @@ onBeforeUnmount(() => {
   border: 8px solid #f3f3f3; /* Couleur de fond */
   border-top: 8px solid #007bff; /* Couleur de la partie tournante (bleu) */
   border-radius: 50%;
-  width: 40px; /* Taille du loader */
-  height: 40px; /* Taille du loader */
+  width: 100px; /* Taille du loader */
+  height: 100px; /* Taille du loader */
   animation: spin 1s linear infinite; /* Animation de rotation */
   margin: 20px auto; /* Centrer le loader */
 }
