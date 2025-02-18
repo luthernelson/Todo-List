@@ -1,7 +1,12 @@
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue'
+import { defineProps, defineEmits, ref, computed } from 'vue'
 import { useTaskStore } from '@/stores/taskStore'
 import { apiService } from '@/service/apiServices'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const isCommunity = computed(() => route.path === '/community')
+const isTaskDetailRoute = computed(() => route.params.id !== undefined)
 
 const taskStore = useTaskStore()
 // Définition des props du modal
@@ -94,7 +99,7 @@ const handleUpdate = async () => {
           </h3>
 
           <!-- Étapes de réalisation (To-Do List) -->
-          <div>
+          <div v-if="!isCommunity || !isTaskDetailRoute">
             <ul class="list-disc pl-6 space-y-2">
               <li v-for="(todo, index) in data.todos" :key="index" class="flex items-center">
                 <input
