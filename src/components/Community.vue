@@ -33,7 +33,7 @@
                     : 'bg-gray-100 text-gray-800 self-start',
                 ]"
               >
-                <strong>{{ message.idUser === authStore.idUser ? 'Moi' : message.username }}</strong
+                <strong>{{ message.idUser == authStore.idUser ? 'Moi' : message.username }}</strong
                 >: {{ message.comment }}
                 <div class="text-xs text-gray-500 mt-1">
                   {{ formatTime(message.Timetamps) }}
