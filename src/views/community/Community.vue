@@ -52,14 +52,13 @@
         @remove-tasks="handleDeleteTask(task.task.idTask)"
         @open-chat="openChat(task.task.idTask)"
       />
-      <div
-        v-if="
-          !taskStore.showForm && activeTab === 'profile' && taskStore.sharedTaskList.length == 0
-        "
-      >
-        <p>Vous n'clearavez partgé aucune tache:(</p>
-      </div>
     </div>
+    <div
+      v-if="!taskStore.showForm && activeTab === 'profile' && taskStore.sharedTaskList.length == 0"
+    >
+      <p>Vous n'avez partgé aucune tache:(</p>
+    </div>
+    
 
     <div
       v-if="!taskStore.showForm && activeTab === 'dashboard' && taskStore.sharedTaskList.length > 0"
@@ -71,13 +70,13 @@
         :data="task"
         @open-chat="openChat(task.task.idTask)"
       />
-      <div
-        v-if="
-          !taskStore.showForm && activeTab === 'dashboard' && taskStore.sharedTaskList.lenght === 0
-        "
-      >
-        <p>Vous n'avez recu aucune tache:(</p>
-      </div>
+    </div>
+    <div
+      v-if="
+        !taskStore.showForm && activeTab === 'dashboard' && taskStore.sharedTaskList.lenght === 0
+      "
+    >
+      <p>Vous n'avez recu aucune tache:(</p>
     </div>
   </div>
 </template>
