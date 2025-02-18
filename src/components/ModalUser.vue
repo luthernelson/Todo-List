@@ -180,23 +180,24 @@ onMounted(() => {
           <h3 class="text-lg font-semibold mt-4">Sélectionnez les utilisateurs à partager:</h3>
           <ul class="pl-6 space-y-2">
             <li
-              v-for="users in taskStore.UsersList.filter((u) => u.idUser !== authStore.idUser) &&
-              !sharedUsers.includes(u.idUser)"
-              :key="users.idUser"
+              v-for="user in taskStore.UsersList.filter(
+                (u) => u.idUser !== authStore.idUser && !sharedUsers.includes(u.idUser),
+              )"
+              :key="user.idUser"
             >
               <input
                 type="checkbox"
                 class="mr-2 w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                :value="users.idUser"
-                :checked="userSelectionState[users.idUser] || false"
-                :disabled="sharedUsers.includes(users.idUser)"
+                :value="user.idUser"
+                :checked="userSelectionState[user.idUser] || false"
+                :disabled="sharedUsers.includes(user.idUser)"
                 @click="
                   () => {
-                    handleUserCheck(users.idUser)
+                    handleUserCheck(user.idUser)
                   }
                 "
               />
-              {{ users.username }}
+              {{ user.username }}
             </li>
           </ul>
 
