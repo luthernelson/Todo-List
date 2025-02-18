@@ -93,7 +93,7 @@ import { useTaskStore } from '../../stores/taskStore'
 import { apiService } from '@/service/apiServices'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../../stores/userStore'
-import { Modal } from '../../components/Modal.vue'
+import Modal from '../../components/Modal.vue'
 
 const authStore = useUserStore() // Utilisation du store d'authentification pour obtenir l'idUser
 const taskStore = useTaskStore()

@@ -80,7 +80,7 @@ import { useRoute } from 'vue-router'
 import { apiService } from '@/service/apiServices'
 import { useTaskStore } from '@/stores/taskStore'
 import { useUserStore } from '@/stores/userStore'
-import { Modal } from '@/components/Modal.vue'
+import Modal from '@/components/Modal.vue'
 import Task from './Task.vue'
 
 const sharedUsers = ref([])
