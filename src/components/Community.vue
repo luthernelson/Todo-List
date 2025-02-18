@@ -263,7 +263,7 @@ onMounted(async () => {
   loading.value = true // Activer le loader
   setTimeout(() => {
     loading.value = false
-  }, 2000)
+  }, 500)
   if (proxy.$socket) {
     proxy.$socket.connect()
     proxy.$socket.on('connect', () => {
