@@ -6,6 +6,7 @@ import '@fortawesome/fontawesome-free/js/all.js'
 import App from './App.vue'
 import router from './router'
 import './index.css'
+import '../src/assets/main.css'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { useAuth } from './stores/userStore' // Importez la fonction useAuth
 

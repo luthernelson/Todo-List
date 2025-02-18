@@ -31,8 +31,11 @@
       </a>
     </li>
   </ul>
-
+  <div v-if="loading" class="flex h-screen justify-center items-center">
+    <div class="loader"></div>
+  </div>
   <div
+    v-else
     class="w-full h-full flex flex-col justify-center items-center px-4 sm:px-8 md:px-12 lg:px-20 pt-8 bg-white"
   >
     <div
@@ -51,10 +54,10 @@
       />
       <div
         v-if="
-          !taskStore.showForm && activeTab === 'profile' && taskStore.sharedTaskList.length === 0
+          !taskStore.showForm && activeTab === 'profile' && taskStore.sharedTaskList.length == 0
         "
       >
-        <p>Aucune tâche disponible.</p>
+        <p>Vous n'clearavez partgé aucune tache:(</p>
       </div>
     </div>
 
@@ -73,7 +76,7 @@
           !taskStore.showForm && activeTab === 'dashboard' && taskStore.sharedTaskList.lenght === 0
         "
       >
-        <p>Aucune tâche partagée disponible.</p>
+        <p>Vous n'avez recu aucune tache:(</p>
       </div>
     </div>
   </div>
@@ -90,7 +93,7 @@ import { useUserStore } from '../../stores/userStore'
 const authStore = useUserStore() // Utilisation du store d'authentification pour obtenir l'idUser
 const taskStore = useTaskStore()
 const activeTab = ref('profile') // Onglet actif par défaut
-
+const loading = ref(true) // État du loader
 const router = useRouter()
 // Fonction pour ouvrir le chat
 const openChat = (taskId) => {
@@ -132,6 +135,10 @@ const loadTasks = async (tab) => {
 }
 onMounted(async () => {
   loadTasks(activeTab.value) // Charge les tâches au montage
+  loading.value = true // Activer le loader
+  setTimeout(() => {
+    loading.value = false
+  }, 2000)
 })
 </script>
 

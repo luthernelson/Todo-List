@@ -7,6 +7,7 @@ import { onBeforeMount, ref, onMounted } from 'vue'
 import { apiService } from '@/service/apiServices'
 
 const taskStore = useTaskStore()
+const loading = ref(true)
 const newTask = ref({
   title: '',
   description: '',
@@ -186,11 +187,20 @@ onBeforeMount(async () => {
 })
 onMounted(async () => {
   await getAllTask()
+  loading.value = true // Activer le loader
+  setTimeout(() => {
+    loading.value = false
+  }, 2000)
 })
 </script>
 
 <template>
+  <div v-if="loading" class="flex h-screen justify-center items-center">
+    <div class="loader"></div>
+    <!-- Loader ici -->
+  </div>
   <div
+    v-else
     class="w-full h-full flex flex-col justify-center items-center px-4 sm:px-8 md:px-12 lg:px-20 pt-8 bg-white"
   >
     <div class="w-full max-w-4xl pt-10">
