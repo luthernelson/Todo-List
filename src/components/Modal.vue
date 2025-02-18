@@ -99,10 +99,11 @@ const handleUpdate = async () => {
           </h3>
 
           <!-- Étapes de réalisation (To-Do List) -->
-          <div v-if="!isCommunity && !isTaskDetailRoute">
+          <div>
             <ul class="list-disc pl-6 space-y-2">
               <li v-for="(todo, index) in data.todos" :key="index" class="flex items-center">
                 <input
+                  v-if="!isCommunity && !isTaskDetailRoute"
                   type="checkbox"
                   class="mr-2 w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   :checked="todo.isCompled"
@@ -116,16 +117,9 @@ const handleUpdate = async () => {
               </li>
             </ul>
           </div>
-          <div v-if="isCommunity && isTaskDetailRoute">
-            <ul class="list-disc pl-6 space-y-2">
-              <li v-for="(todo, index) in data.todos" :key="index" class="flex items-center">
-                {{ todo.title }}
-              </li>
-            </ul>
-          </div>
-
-          <div v-if="!isCommunity && !isTaskDetailRoute" class="flex justify-center mt-10">
+          <div class="flex justify-center mt-10">
             <button
+              v-if="!isCommunity && !isTaskDetailRoute"
               :disabled="!canUpdate"
               type="button"
               :class="canUpdate ? blueBtn : grayBtn"
