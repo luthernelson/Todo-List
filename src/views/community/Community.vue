@@ -58,7 +58,6 @@
     >
       <p>Vous n'avez partgé aucune tache:(</p>
     </div>
-    
 
     <div
       v-if="!taskStore.showForm && activeTab === 'dashboard' && taskStore.sharedTaskList.length > 0"
@@ -73,7 +72,7 @@
     </div>
     <div
       v-if="
-        !taskStore.showForm && activeTab === 'dashboard' && taskStore.sharedTaskList.lenght === 0
+        !taskStore.showForm && activeTab === 'dashboard' && taskStore.sharedTaskList.lenght == 0
       "
     >
       <p>Vous n'avez recu aucune tache:(</p>
@@ -106,6 +105,7 @@ function setActiveTab(tab) {
 }
 
 const loadTasks = async (tab) => {
+  loading.value = true // Activer le loader
   try {
     let result = []
 
@@ -130,6 +130,8 @@ const loadTasks = async (tab) => {
     taskStore.setSharedTaskList(result)
   } catch (e) {
     console.error('loadTasks.error >> ', e)
+  } finally {
+    loading.value = false // Désactiver le loader une fois le chargement terminé
   }
 }
 onMounted(async () => {
@@ -137,7 +139,7 @@ onMounted(async () => {
   loading.value = true // Activer le loader
   setTimeout(() => {
     loading.value = false
-  }, 2000)
+  }, 1000)
 })
 </script>
 

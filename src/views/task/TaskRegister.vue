@@ -190,7 +190,7 @@ onMounted(async () => {
   loading.value = true // Activer le loader
   setTimeout(() => {
     loading.value = false
-  }, 2000)
+  }, 1000)
 })
 </script>
 
