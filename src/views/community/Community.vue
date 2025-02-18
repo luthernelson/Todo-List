@@ -77,6 +77,12 @@
     >
       <p>Vous n'avez recu aucune tache:(</p>
     </div>
+    <Modal
+      :isVisible="taskStore.showModal"
+      :data="taskStore.selectedTask"
+      @close="taskStore.showModal = false"
+    >
+    </Modal>
   </div>
 </template>
 
@@ -87,6 +93,7 @@ import { useTaskStore } from '../../stores/taskStore'
 import { apiService } from '@/service/apiServices'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../../stores/userStore'
+import { Modal } from '../../components/Modal.vue'
 
 const authStore = useUserStore() // Utilisation du store d'authentification pour obtenir l'idUser
 const taskStore = useTaskStore()

@@ -65,6 +65,12 @@
         </button>
       </div>
     </main>
+    <Modal
+      :isVisible="taskStore.showModal"
+      :data="taskStore.selectedTask"
+      @close="taskStore.showModal = false"
+    >
+    </Modal>
   </div>
 </template>
 
@@ -74,6 +80,7 @@ import { useRoute } from 'vue-router'
 import { apiService } from '@/service/apiServices'
 import { useTaskStore } from '@/stores/taskStore'
 import { useUserStore } from '@/stores/userStore'
+import { Modal } from '@/components/Modal.vue'
 import Task from './Task.vue'
 
 const sharedUsers = ref([])
