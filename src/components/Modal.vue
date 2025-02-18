@@ -116,8 +116,15 @@ const handleUpdate = async () => {
               </li>
             </ul>
           </div>
+          <div v-if="isCommunity && isTaskDetailRoute">
+            <ul class="list-disc pl-6 space-y-2">
+              <li v-for="(todo, index) in data.todos" :key="index" class="flex items-center">
+                {{ todo.title }}
+              </li>
+            </ul>
+          </div>
 
-          <div class="flex justify-center mt-10">
+          <div v-if="!isCommunity && !isTaskDetailRoute" class="flex justify-center mt-10">
             <button
               :disabled="!canUpdate"
               type="button"
