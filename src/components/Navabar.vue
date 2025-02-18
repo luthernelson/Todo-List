@@ -23,12 +23,13 @@
       >
         Communauté
       </RouterLink>
-      <li
+      <RouterLink
+        to="/"
         class="text-orange-200 duration-300 transition-all text-lg font-extrabold cursor-pointer"
         @click="taskStore.toggleForm"
       >
         + Nouvelle tâche
-      </li>
+      </RouterLink>
     </ul>
     <!-- Icône utilisateur et bouton de déconnexion (desktop) -->
     <div class="hidden md:flex items-center space-x-6">
@@ -82,12 +83,13 @@
         >
           <i class="fa-solid fa-people-group mr-2"></i>Communauté
         </RouterLink>
-        <li
+        <RouterLink
+          to="/"
           class="text-orange-200 duration-300 transition-all px-4 py-2 text-lg font-extrabold cursor-pointer"
           @click="taskStore.toggleForm"
         >
           + Nouvelle tâche
-        </li>
+        </RouterLink>
       </ul>
 
       <!-- Bouton de déconnexion (mobile) : Icône au lieu du texte -->
