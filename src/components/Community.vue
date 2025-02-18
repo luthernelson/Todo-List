@@ -1,67 +1,71 @@
 <template>
   <div class="flex h-screen">
     <div v-if="loading" class="loader"></div>
-    <!-- Loader ici -->
-    <!-- Barre verticale pour les membres -->
-    <aside class="w-1/4 bg-gray-800 text-white p-4 overflow-y-auto">
-      <h2 class="text-lg font-bold mb-4">Membres</h2>
-      <ul class="space-y-2">
-        <li v-for="(member, index) in members" :key="index" class="p-2 bg-gray-700 rounded-lg">
-          {{ member }}
-        </li>
-      </ul>
-    </aside>
+    <div v-else>
+      <!-- Loader ici -->
+      <!-- Barre verticale pour les membres -->
+      <aside class="w-1/4 bg-gray-800 text-white p-4 overflow-y-auto">
+        <h2 class="text-lg font-bold mb-4">Membres</h2>
+        <ul class="space-y-2">
+          <li v-for="(member, index) in members" :key="index" class="p-2 bg-gray-700 rounded-lg">
+            {{ member }}
+          </li>
+        </ul>
+      </aside>
 
-    <!-- Zone principale pour le chat -->
-    <main class="flex-1 chat-container bg-gray-100 p-6">
-      <div
-        ref="messagesContainer"
-        class="messages overflow-y-auto h-[70vh] bg-white p-4 rounded-lg mb-4"
-      >
-        <Task :data="task" v-if="task" />
-
-        <div class="flex-1 overflow-y-auto p-4">
-          <template v-for="(date, index) in Object.keys(groupedMessages)" :key="index">
-            <div class="text-center text-gray-500 text-sm mb-2">
-              {{ date }}
-              <!-- Affiche la date -->
-            </div>
-            <template v-for="(message, msgIndex) in groupedMessages[date]" :key="msgIndex">
-              <div
-                class="message p-4 rounded-lg mb-2"
-                :class="[
-                  message.idUser == authStore.idUser
-                    ? 'bg-blue-100 text-blue-700 self-end'
-                    : 'bg-gray-100 text-gray-800 self-start',
-                ]"
-              >
-                <strong>{{ message.idUser == authStore.idUser ? 'Moi' : message.username }}</strong
-                >: {{ message.comment }}
-                <div class="text-xs text-gray-500 mt-1">
-                  {{ formatTime(message.Timetamps) }}
-                </div>
-              </div>
-            </template>
-          </template>
-        </div>
-      </div>
-
-      <!-- Zone de saisie -->
-      <div class="input-area flex gap-2">
-        <input
-          v-model="newMessage"
-          type="text"
-          placeholder="Tapez votre message..."
-          class="flex-1 p-2 border rounded-lg focus:outline-none"
-        />
-        <button
-          @click="sendMessage"
-          class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+      <!-- Zone principale pour le chat -->
+      <main class="flex-1 chat-container bg-gray-100 p-6">
+        <div
+          ref="messagesContainer"
+          class="messages overflow-y-auto h-[70vh] bg-white p-4 rounded-lg mb-4"
         >
-          Envoyer
-        </button>
-      </div>
-    </main>
+          <Task :data="task" v-if="task" />
+
+          <div class="flex-1 overflow-y-auto p-4">
+            <template v-for="(date, index) in Object.keys(groupedMessages)" :key="index">
+              <div class="text-center text-gray-500 text-sm mb-2">
+                {{ date }}
+                <!-- Affiche la date -->
+              </div>
+              <template v-for="(message, msgIndex) in groupedMessages[date]" :key="msgIndex">
+                <div
+                  class="message p-4 rounded-lg mb-2"
+                  :class="[
+                    message.idUser == authStore.idUser
+                      ? 'bg-blue-100 text-blue-700 self-end'
+                      : 'bg-gray-100 text-gray-800 self-start',
+                  ]"
+                >
+                  <strong>{{
+                    message.idUser == authStore.idUser ? 'Moi' : message.username
+                  }}</strong
+                  >: {{ message.comment }}
+                  <div class="text-xs text-gray-500 mt-1">
+                    {{ formatTime(message.Timetamps) }}
+                  </div>
+                </div>
+              </template>
+            </template>
+          </div>
+        </div>
+
+        <!-- Zone de saisie -->
+        <div class="input-area flex gap-2">
+          <input
+            v-model="newMessage"
+            type="text"
+            placeholder="Tapez votre message..."
+            class="flex-1 p-2 border rounded-lg focus:outline-none"
+          />
+          <button
+            @click="sendMessage"
+            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+          >
+            Envoyer
+          </button>
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -88,7 +92,6 @@ const messagesContainer = ref(null) // Référence à la zone des messages
 const loading = ref(true) // État du loader
 
 const loadSharedUsers = async () => {
-  loading.value = true // Activer le load
   try {
     const response = await apiService.getsharedTasks() // Appel à l'API pour récupérer les tâches partagées
     console.log("Réponse complète de l'API:", response) // Affiche la réponse complète pour vérifier la structure
@@ -119,8 +122,6 @@ const loadSharedUsers = async () => {
     }
   } catch (error) {
     console.error('Erreur lors de la récupération des utilisateurs partagés:', error)
-  } finally {
-    loading.value = false // Désactiver le loader après chargement
   }
 }
 
@@ -149,7 +150,6 @@ const formatTime = (dateString) => {
 
 // Fonction pour charger les commentaires de la tâche
 const loadCommentToTasks = async () => {
-  loading.value = true // Activer le load
   try {
     const result = await apiService.getCommentById(taskId.value)
     if (result.comments && Array.isArray(result.comments)) {
@@ -163,11 +163,8 @@ const loadCommentToTasks = async () => {
     }
   } catch (error) {
     console.error('loadCommentToTasks.error >> ', error)
-  } finally {
-    loading.value = false // Désactiver le loader après chargement
   }
 }
-
 // Fonction pour envoyer un message
 const sendMessage = async () => {
   if (newMessage.value.trim() !== '') {
@@ -257,7 +254,10 @@ onMounted(async () => {
   await loadCommentToTasks()
   await loadTaskDetails()
   await loadSharedUsers()
-  await loading()
+  loading.value = true // Activer le loader
+  setTimeout(() => {
+    loading.value = false
+  }, 2000)
   if (proxy.$socket) {
     proxy.$socket.connect()
     proxy.$socket.on('connect', () => {
