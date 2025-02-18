@@ -68,6 +68,10 @@
         :key="index"
         :data="task"
         @open-chat="openChat(task.task.idTask)"
+        @open-modal="taskStore.openModal(task)"
+        @open-user-modal="taskStore.openUserModal(task)"
+        @open-update-modal="handleUpdateTask(task)"
+        @remove-tasks="handleDeleteTask(task.task.idTask)"
       />
     </div>
     <div
@@ -77,6 +81,7 @@
     >
       <p>Vous n'avez recu aucune tache:(</p>
     </div>
+
     <Modal
       :isVisible="taskStore.showModal"
       :data="taskStore.selectedTask"

@@ -21,7 +21,7 @@
         ref="messagesContainer"
         class="messages overflow-y-auto h-[70vh] bg-white p-4 rounded-lg mb-4"
       >
-        <Task :data="task" v-if="task" />
+        <Task :data="task" v-if="task" @open-modal="taskStore.openModal(task)" />
 
         <div class="flex-1 overflow-y-auto p-4">
           <template v-for="(date, index) in Object.keys(groupedMessages)" :key="index">
