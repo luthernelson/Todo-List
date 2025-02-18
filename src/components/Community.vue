@@ -257,6 +257,7 @@ onMounted(async () => {
   await loadCommentToTasks()
   await loadTaskDetails()
   await loadSharedUsers()
+  await loading()
   if (proxy.$socket) {
     proxy.$socket.connect()
     proxy.$socket.on('connect', () => {
