@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen">
-    <div v-if="loading" class="loader"></div>
-    <div v-else class="flex h-screen justify-center items-center">
+    <div v-if="loading" class="loader justify-center items-center"></div>
+    <div v-else class="flex h-screen">
       <!-- Loader ici -->
       <!-- Barre verticale pour les membres -->
       <aside class="w-1/4 bg-gray-800 text-white p-4 overflow-y-auto">
