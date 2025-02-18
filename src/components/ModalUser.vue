@@ -3,7 +3,9 @@ import { defineProps, defineEmits, onMounted, ref, watch } from 'vue'
 import { useTaskStore } from '@/stores/taskStore'
 import { apiService } from '@/service/apiServices'
 import { computed } from 'vue'
+import { useUserStore } from '@/stores/userStore'
 
+const authStore = useUserStore()
 const taskStore = useTaskStore()
 const canUpdate = ref(false)
 // Définition des props du modal
@@ -74,7 +76,6 @@ const handleUserCheck = (idUser) => {
 
   console.log('Utilisateurs sélectionnés dans le store:', taskStore.selectedTaskUsers[taskId.value])
 }
-
 // Partager la tâche avec les utilisateurs sélectionnés
 const handleShareTask = async () => {
   console.log('props.data:', props.data) // Vérification de props.data
@@ -90,7 +91,7 @@ const handleShareTask = async () => {
 
   const taskToShare = {
     idTask: taskId.value,
-    idUser: selectedUserIds.value,
+    idUser: [...selectedUserIds.value, authStore.idUser], // Utilisateur connecté
     title: props.data.task.title, // Utilisation des ID stockés dans le store
     description: props.data.task.description,
     isCompled: props.data.task.isCompled,
@@ -149,7 +150,10 @@ onMounted(() => {
           <!-- Liste des utilisateurs à partager -->
           <h3 class="text-lg font-semibold mt-4">Sélectionnez les utilisateurs à partager:</h3>
           <ul class="pl-6 space-y-2">
-            <li v-for="users in taskStore.UsersList" :key="users.idUser">
+            <li
+              v-for="users in taskStore.UsersListfilter((u) => u.idUser !== authStore.idUser)"
+              :key="users.idUser"
+            >
               <input
                 type="checkbox"
                 class="mr-2 w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
