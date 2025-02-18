@@ -181,7 +181,7 @@ onMounted(() => {
           <ul class="pl-6 space-y-2">
             <li
               v-for="user in taskStore.UsersList.filter(
-                (u) => u.idUser !== authStore.idUser && !sharedUsers.includes(u.idUser),
+                (u) => u.idUser !== authStore.idUser, // Exclut l'utilisateur connecté
               )"
               :key="user.idUser"
             >
@@ -190,7 +190,7 @@ onMounted(() => {
                 class="mr-2 w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 :value="user.idUser"
                 :checked="userSelectionState[user.idUser] || false"
-                :disabled="sharedUsers.includes(user.idUser)"
+                :disabled="sharedUsers.some((sharedUser) => sharedUser.idUser === user.idUser)"
                 @click="
                   () => {
                     handleUserCheck(user.idUser)
