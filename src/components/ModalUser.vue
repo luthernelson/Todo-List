@@ -151,7 +151,7 @@ onMounted(() => {
           <h3 class="text-lg font-semibold mt-4">Sélectionnez les utilisateurs à partager:</h3>
           <ul class="pl-6 space-y-2">
             <li
-              v-for="users in taskStore.UsersList.filter((u) => u.idUser !== authStore.idUser)"
+              v-for="users in taskStore.UsersList.filter((u) => u.user.idUser !== authStore.idUser)"
               :key="users.idUser"
             >
               <input
