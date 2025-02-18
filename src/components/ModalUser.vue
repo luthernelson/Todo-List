@@ -7,6 +7,7 @@ import { useUserStore } from '@/stores/userStore'
 
 const authStore = useUserStore()
 const taskStore = useTaskStore()
+const sharedUsers = ref([]) // Pour stocker les utilisateurs partagés
 const canUpdate = ref(false)
 // Définition des props du modal
 const userSelectionState = ref({}) // Stocke l'état des utilisateurs
@@ -112,6 +113,33 @@ const handleShareTask = async () => {
     console.error('Erreur lors du partage des tâches:', error.response?.data || error)
   }
 }
+const loadSharedUsers = async () => {
+  try {
+    const response = await apiService.getsharedTasks() // Corrigez le nom de la méthode si nécessaire
+    console.log("Réponse complète de l'API:", response)
+
+    if (response && Array.isArray(response)) {
+      console.log('Liste des tâches partagées:', response)
+
+      const tasks = response.find((t) => t.task.idTask == taskId.value)
+
+      if (tasks) {
+        if (tasks.sharedWith && tasks.sharedWith.length > 0) {
+          sharedUsers.value = tasks.sharedWith // Récupère les utilisateurs partagés
+          console.log('Utilisateurs partagés:', sharedUsers.value)
+        } else {
+          console.warn("Aucun utilisateur trouvé dans 'sharedWith' pour la tâche", taskId.value)
+        }
+      } else {
+        console.warn("Aucune tâche trouvée avec l'idTask", taskId.value)
+      }
+    } else {
+      console.error('La réponse ne contient pas de tableau ou est mal structurée.')
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération des utilisateurs partagés:', error)
+  }
+}
 // Charger l'état à l'ouverture du modal
 watch(taskId, (newTaskId) => {
   if (newTaskId) {
@@ -122,6 +150,7 @@ watch(taskId, (newTaskId) => {
 onMounted(() => {
   loadUsers()
   loadTaskUsers()
+  loadSharedUsers() // Charge les utilisateurs partagés
 })
 </script>
 
@@ -151,7 +180,7 @@ onMounted(() => {
           <h3 class="text-lg font-semibold mt-4">Sélectionnez les utilisateurs à partager:</h3>
           <ul class="pl-6 space-y-2">
             <li
-              v-for="users in taskStore.UsersList.filter((u) => u.user.idUser !== authStore.idUser)"
+              v-for="users in taskStore.UsersList.filter((u) => u.idUser !== authStore.idUser)"
               :key="users.idUser"
             >
               <input
@@ -159,6 +188,7 @@ onMounted(() => {
                 class="mr-2 w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 :value="users.idUser"
                 :checked="userSelectionState[users.idUser] || false"
+                :disabled="sharedUsers.includes(users.idUser)"
                 @click="
                   () => {
                     handleUserCheck(users.idUser)
