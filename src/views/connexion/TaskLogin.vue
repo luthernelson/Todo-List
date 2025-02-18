@@ -41,7 +41,7 @@ const loginUser = async () => {
             <input
               type="text"
               v-model="email"
-              placeholder="Username"
+              placeholder="Email"
               required
               class="border-b-2 border-gray-300 focus:border-blue-500 outline-none p-2 w-full"
             />
