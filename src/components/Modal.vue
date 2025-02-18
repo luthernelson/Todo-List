@@ -99,7 +99,7 @@ const handleUpdate = async () => {
           </h3>
 
           <!-- Étapes de réalisation (To-Do List) -->
-          <div v-if="!isCommunity || !isTaskDetailRoute">
+          <div v-if="!isCommunity && !isTaskDetailRoute">
             <ul class="list-disc pl-6 space-y-2">
               <li v-for="(todo, index) in data.todos" :key="index" class="flex items-center">
                 <input
