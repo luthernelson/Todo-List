@@ -1,71 +1,70 @@
 <template>
-  <div class="flex h-screen">
-    <div v-if="loading" class="loader justify-center items-center"></div>
-    <div v-else class="flex h-screen">
-      <!-- Loader ici -->
-      <!-- Barre verticale pour les membres -->
-      <aside class="w-1/4 bg-gray-800 text-white p-4 overflow-y-auto">
-        <h2 class="text-lg font-bold mb-4">Membres</h2>
-        <ul class="space-y-2">
-          <li v-for="(member, index) in members" :key="index" class="p-2 bg-gray-700 rounded-lg">
-            {{ member }}
-          </li>
-        </ul>
-      </aside>
+  <div v-if="loading" class="flex h-screen justify-center items-center">
+    <div class="loader"></div>
+    <!-- Loader ici -->
+  </div>
+  <div v-else class="flex h-screen">
+    <!-- Loader ici -->
+    <!-- Barre verticale pour les membres -->
+    <aside class="w-1/4 bg-gray-800 text-white p-4 overflow-y-auto">
+      <h2 class="text-lg font-bold mb-4">Membres</h2>
+      <ul class="space-y-2">
+        <li v-for="(member, index) in members" :key="index" class="p-2 bg-gray-700 rounded-lg">
+          {{ member }}
+        </li>
+      </ul>
+    </aside>
 
-      <!-- Zone principale pour le chat -->
-      <main class="flex-1 chat-container bg-gray-100 p-6">
-        <div
-          ref="messagesContainer"
-          class="messages overflow-y-auto h-[70vh] bg-white p-4 rounded-lg mb-4"
-        >
-          <Task :data="task" v-if="task" />
+    <!-- Zone principale pour le chat -->
+    <main class="flex-1 chat-container bg-gray-100 p-6">
+      <div
+        ref="messagesContainer"
+        class="messages overflow-y-auto h-[70vh] bg-white p-4 rounded-lg mb-4"
+      >
+        <Task :data="task" v-if="task" />
 
-          <div class="flex-1 overflow-y-auto p-4">
-            <template v-for="(date, index) in Object.keys(groupedMessages)" :key="index">
-              <div class="text-center text-gray-500 text-sm mb-2">
-                {{ date }}
-                <!-- Affiche la date -->
-              </div>
-              <template v-for="(message, msgIndex) in groupedMessages[date]" :key="msgIndex">
-                <div
-                  class="message p-4 rounded-lg mb-2"
-                  :class="[
-                    message.idUser == authStore.idUser
-                      ? 'bg-blue-100 text-blue-700 self-end'
-                      : 'bg-gray-100 text-gray-800 self-start',
-                  ]"
-                >
-                  <strong>{{
-                    message.idUser == authStore.idUser ? 'Moi' : message.username
-                  }}</strong
-                  >: {{ message.comment }}
-                  <div class="text-xs text-gray-500 mt-1">
-                    {{ formatTime(message.Timetamps) }}
-                  </div>
+        <div class="flex-1 overflow-y-auto p-4">
+          <template v-for="(date, index) in Object.keys(groupedMessages)" :key="index">
+            <div class="text-center text-gray-500 text-sm mb-2">
+              {{ date }}
+              <!-- Affiche la date -->
+            </div>
+            <template v-for="(message, msgIndex) in groupedMessages[date]" :key="msgIndex">
+              <div
+                class="message p-4 rounded-lg mb-2"
+                :class="[
+                  message.idUser == authStore.idUser
+                    ? 'bg-blue-100 text-blue-700 self-end'
+                    : 'bg-gray-100 text-gray-800 self-start',
+                ]"
+              >
+                <strong>{{ message.idUser == authStore.idUser ? 'Moi' : message.username }}</strong
+                >: {{ message.comment }}
+                <div class="text-xs text-gray-500 mt-1">
+                  {{ formatTime(message.Timetamps) }}
                 </div>
-              </template>
+              </div>
             </template>
-          </div>
+          </template>
         </div>
+      </div>
 
-        <!-- Zone de saisie -->
-        <div class="input-area flex gap-2">
-          <input
-            v-model="newMessage"
-            type="text"
-            placeholder="Tapez votre message..."
-            class="flex-1 p-2 border rounded-lg focus:outline-none"
-          />
-          <button
-            @click="sendMessage"
-            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Envoyer
-          </button>
-        </div>
-      </main>
-    </div>
+      <!-- Zone de saisie -->
+      <div class="input-area flex gap-2">
+        <input
+          v-model="newMessage"
+          type="text"
+          placeholder="Tapez votre message..."
+          class="flex-1 p-2 border rounded-lg focus:outline-none"
+        />
+        <button
+          @click="sendMessage"
+          class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+        >
+          Envoyer
+        </button>
+      </div>
+    </main>
   </div>
 </template>
 
