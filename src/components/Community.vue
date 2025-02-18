@@ -28,12 +28,12 @@
               <div
                 class="message p-4 rounded-lg mb-2"
                 :class="[
-                  message.idUser == authStore.idUser
+                  message.idUser === authStore.idUser
                     ? 'bg-blue-100 text-blue-700 self-end'
                     : 'bg-gray-100 text-gray-800 self-start',
                 ]"
               >
-                <strong>{{ message.idUser == authStore.idUser ? 'Moi' : message.username }}</strong
+                <strong>{{ message.idUser === authStore.idUser ? 'Moi' : message.username }}</strong
                 >: {{ message.comment }}
                 <div class="text-xs text-gray-500 mt-1">
                   {{ formatTime(message.Timetamps) }}
@@ -147,6 +147,7 @@ const loadCommentToTasks = async () => {
     const result = await apiService.getCommentById(taskId.value)
     if (result.comments && Array.isArray(result.comments)) {
       messages.value = result.comments
+      sortMessagesByDate() // Trier les messages par date
       groupMessagesByDate() // Regrouper les messages après les avoir chargés
       await nextTick()
       scrollToBottom() // Faire défiler vers le bas après le chargement des messages
@@ -182,6 +183,7 @@ const sendMessage = async () => {
 
       // Ajouter le message à la liste locale
       messages.value.push(messageData)
+      sortMessagesByDate() // Trier les messages par date
       groupMessagesByDate() // Regrouper après l'ajout d'un nouveau message
       newMessage.value = ''
       await nextTick()
@@ -190,6 +192,11 @@ const sendMessage = async () => {
       console.error('Error sending message:', error)
     }
   }
+}
+
+// Fonction pour trier les messages par date
+const sortMessagesByDate = () => {
+  messages.value.sort((a, b) => new Date(a.Timetamps) - new Date(b.Timetamps))
 }
 
 // Fonction pour regrouper les messages par date
@@ -221,6 +228,7 @@ const listenForMessages = () => {
           data.Timetamps = new Date().toISOString()
         }
         messages.value.push(data)
+        sortMessagesByDate() // Trier les messages par date
         groupMessagesByDate() // Regrouper après l'ajout d'un nouveau message
         nextTick(() => {
           scrollToBottom() // Faire défiler vers le bas après l'ajout d'un nouveau message
