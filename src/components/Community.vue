@@ -28,12 +28,12 @@
               <div
                 class="message p-4 rounded-lg mb-2"
                 :class="[
-                  message.idUser === authStore.idUser
+                  message.idUser == authStore.idUser
                     ? 'bg-blue-100 text-blue-700 self-end'
                     : 'bg-gray-100 text-gray-800 self-start',
                 ]"
               >
-                <strong>{{ message.idUser === authStore.idUser ? 'Moi' : message.username }}</strong
+                <strong>{{ message.idUser == authStore.idUser ? 'Moi' : message.username }}</strong
                 >: {{ message.comment }}
                 <div class="text-xs text-gray-500 mt-1">
                   {{ formatTime(message.Timetamps) }}
