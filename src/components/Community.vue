@@ -12,7 +12,10 @@
 
     <!-- Zone principale pour le chat -->
     <main class="flex-1 chat-container bg-gray-100 p-6">
-      <div class="messages overflow-y-auto h-[70vh] bg-white p-4 rounded-lg mb-4">
+      <div
+        ref="messagesContainer"
+        class="messages overflow-y-auto h-[70vh] bg-white p-4 rounded-lg mb-4"
+      >
         <Task :data="task" v-if="task" />
 
         <div class="flex-1 overflow-y-auto p-4">
@@ -61,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, getCurrentInstance, onBeforeUnmount, computed } from 'vue'
+import { ref, watch, onMounted, getCurrentInstance, onBeforeUnmount, computed, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { apiService } from '@/service/apiServices'
 import { useTaskStore } from '@/stores/taskStore'
@@ -79,6 +82,7 @@ const socketStatus = ref('Déconnecté')
 const messages = ref([])
 const newMessage = ref('')
 const groupedMessages = ref({}) // Un objet pour stocker les messages regroupés par date
+const messagesContainer = ref(null) // Référence à la zone des messages
 
 const loadSharedUsers = async () => {
   try {
@@ -144,6 +148,8 @@ const loadCommentToTasks = async () => {
     if (result.comments && Array.isArray(result.comments)) {
       messages.value = result.comments
       groupMessagesByDate() // Regrouper les messages après les avoir chargés
+      await nextTick()
+      scrollToBottom() // Faire défiler vers le bas après le chargement des messages
     } else {
       console.warn('Aucun commentaire trouvé ou réponse invalide', result)
     }
@@ -178,6 +184,8 @@ const sendMessage = async () => {
       messages.value.push(messageData)
       groupMessagesByDate() // Regrouper après l'ajout d'un nouveau message
       newMessage.value = ''
+      await nextTick()
+      scrollToBottom() // Faire défiler vers le bas après l'envoi d'un nouveau message
     } catch (error) {
       console.error('Error sending message:', error)
     }
@@ -196,6 +204,13 @@ const groupMessagesByDate = () => {
   })
 }
 
+// Fonction pour faire défiler la zone des messages vers le bas
+const scrollToBottom = () => {
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+  }
+}
+
 // Écouter les nouveaux messages via Socket.IO
 const listenForMessages = () => {
   if (proxy.$socket) {
@@ -207,6 +222,9 @@ const listenForMessages = () => {
         }
         messages.value.push(data)
         groupMessagesByDate() // Regrouper après l'ajout d'un nouveau message
+        nextTick(() => {
+          scrollToBottom() // Faire défiler vers le bas après l'ajout d'un nouveau message
+        })
       }
     })
 
