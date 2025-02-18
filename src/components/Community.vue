@@ -1,5 +1,7 @@
 <template>
   <div class="flex h-screen">
+    <div v-if="loading" class="loader"></div>
+    <!-- Loader ici -->
     <!-- Barre verticale pour les membres -->
     <aside class="w-1/4 bg-gray-800 text-white p-4 overflow-y-auto">
       <h2 class="text-lg font-bold mb-4">Membres</h2>
@@ -83,8 +85,10 @@ const messages = ref([])
 const newMessage = ref('')
 const groupedMessages = ref({}) // Un objet pour stocker les messages regroupés par date
 const messagesContainer = ref(null) // Référence à la zone des messages
+const loading = ref(true) // État du loader
 
 const loadSharedUsers = async () => {
+  loading.value = true // Activer le load
   try {
     const response = await apiService.getsharedTasks() // Appel à l'API pour récupérer les tâches partagées
     console.log("Réponse complète de l'API:", response) // Affiche la réponse complète pour vérifier la structure
@@ -115,6 +119,8 @@ const loadSharedUsers = async () => {
     }
   } catch (error) {
     console.error('Erreur lors de la récupération des utilisateurs partagés:', error)
+  } finally {
+    loading.value = false // Désactiver le loader après chargement
   }
 }
 
@@ -143,6 +149,7 @@ const formatTime = (dateString) => {
 
 // Fonction pour charger les commentaires de la tâche
 const loadCommentToTasks = async () => {
+  loading.value = true // Activer le load
   try {
     const result = await apiService.getCommentById(taskId.value)
     if (result.comments && Array.isArray(result.comments)) {
@@ -156,6 +163,8 @@ const loadCommentToTasks = async () => {
     }
   } catch (error) {
     console.error('loadCommentToTasks.error >> ', error)
+  } finally {
+    loading.value = false // Désactiver le loader après chargement
   }
 }
 
@@ -322,5 +331,23 @@ onBeforeUnmount(() => {
 /* Style des messages reçus */
 .bg-gray-100 {
   margin-right: auto; /* Aligner à gauche */
+}
+.loader {
+  border: 8px solid #f3f3f3; /* Couleur de fond */
+  border-top: 8px solid #007bff; /* Couleur de la partie tournante (bleu) */
+  border-radius: 50%;
+  width: 40px; /* Taille du loader */
+  height: 40px; /* Taille du loader */
+  animation: spin 1s linear infinite; /* Animation de rotation */
+  margin: 20px auto; /* Centrer le loader */
+}
+/* Animation de rotation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
