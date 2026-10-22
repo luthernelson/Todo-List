@@ -2,3 +2,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Tailles globales réduites */
+:root {
+  --base-font-size: 14px;
+}
+
+html {
+  font-size: var(--base-font-size);
+}
+
+/* Réduire les boutons globalement */
+button {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+/* Réduire les inputs globalement */
+input, select, textarea {
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Réduire les titres globalement */
+h1 {
+  font-size: 1.5rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+}
+
+h4 {
+  font-size: 1rem;
+}

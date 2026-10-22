@@ -1,23 +1,58 @@
 <script setup>
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
+import { useToastStore } from '@/stores/toastStore'
+import { useActivityStore } from '@/stores/activityStore'
 import router from '../../router'
 import { RouterLink } from 'vue-router'
+import LoadingButton from '@/components/ui/LoadingButton.vue'
 
 const email = ref('')
 const password = ref('')
 const userStore = useUserStore()
+const toastStore = useToastStore()
+const activityStore = useActivityStore()
 const passwordVisible = ref(false)
+const loading = ref(false)
+const errorMessage = ref('')
+
 const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value
 }
 
+const generateUsernameFromEmail = (email) => {
+  const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
+  return username
+}
+
 const loginUser = async () => {
+  if (!email.value || !password.value) {
+    errorMessage.value = 'Veuillez remplir tous les champs'
+    toastStore.error('Veuillez remplir tous les champs')
+    return
+  }
+
+  loading.value = true
+  errorMessage.value = ''
+
   try {
-    await userStore.login(email.value, password.value) // Appel à la méthode de connexion du store
-    router.push('/') // Redirection vers la page d'accueil après connexion
+    const result = await userStore.login(email.value, password.value)
+    
+    // Charger les activités mock
+    activityStore.loadMockActivities()
+    
+    toastStore.success('Connexion réussie !')
+    
+    // Redirection vers le dashboard
+    setTimeout(() => {
+      router.push('/dashboard')
+    }, 500)
   } catch (error) {
-    alert("Nom d'utilisateur ou mot de passe incorrect!", error)
+    errorMessage.value = error.message || "Nom d'utilisateur ou mot de passe incorrect"
+    toastStore.error(error.message || "Nom d'utilisateur ou mot de passe incorrect")
+    console.error('Erreur de connexion:', error)
+  } finally {
+    loading.value = false
   }
 }
 </script>
@@ -31,12 +66,18 @@ const loginUser = async () => {
       <!-- Section Formulaire -->
       <div class="w-full md:w-1/2 p-6">
         <form @submit.prevent="loginUser">
-          <div class="mb-4 text-center text-3xl font-bold">
+          <div class="mb-4 text-center text-2xl font-bold">
             <h2>LOGIN</h2>
           </div>
-          <div class="flex justify-center items-center mb-6">
-            <i class="fa-solid fa-circle-user text-6xl text-blue-500"></i>
+          <div class="flex justify-center items-center mb-4">
+            <i class="fa-solid fa-circle-user text-5xl text-blue-500"></i>
           </div>
+
+          <!-- Message d'erreur -->
+          <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            {{ errorMessage }}
+          </div>
+
           <div class="mb-4">
             <input
               type="text"
@@ -96,12 +137,15 @@ const loginUser = async () => {
             </svg>
           </div>
           <div class="text-center">
-            <button
+            <LoadingButton
               type="submit"
-              class="w-full px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-            >
-              Connexion
-            </button>
+              text="Connexion"
+              loading-text="Connexion en cours..."
+              :loading="loading"
+              variant="primary"
+              size="large"
+              style="width: 100%"
+            />
           </div>
           <div class="flex items-center justify-between pt-4">
             <p>Don't have an account?</p>

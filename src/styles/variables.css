@@ -1,0 +1,108 @@
+:root {
+  /* Couleur principale */
+  --primary-color: rgb(29, 40, 61);
+  --primary-light: rgba(29, 40, 61, 0.8);
+  --primary-dark: rgb(20, 30, 45);
+  
+  /* Couleurs secondaires */
+  --secondary-color: #667eea;
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #3b82f6;
+  
+  /* Couleurs neutres */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  /* Couleurs de fond */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  
+  /* Couleurs de texte */
+  --text-primary: rgb(29, 40, 61);
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-light: #d1d5db;
+  
+  /* Bordures */
+  --border-color: #e5e7eb;
+  --border-light: #f3f4f6;
+  --border-dark: #d1d5db;
+  
+  /* Ombres */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  
+  /* Rayons de bordure */
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* Espacements */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  
+  /* Z-index */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal: 400;
+  --z-popover: 500;
+  --z-tooltip: 600;
+}
+
+/* Dark mode */
+.dark {
+  --primary-color: rgb(59, 70, 91);
+  --primary-light: rgba(59, 70, 91, 0.8);
+  --primary-dark: rgb(40, 50, 70);
+  
+  --bg-primary: #1f2937;
+  --bg-secondary: #111827;
+  --bg-tertiary: #374151;
+  
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --text-light: #6b7280;
+  
+  --border-color: #374151;
+  --border-light: #4b5563;
+  --border-dark: #6b7280;
+  
+  --gray-50: #1f2937;
+  --gray-100: #374151;
+  --gray-200: #4b5563;
+  --gray-300: #6b7280;
+  --gray-400: #9ca3af;
+  --gray-500: #d1d5db;
+  --gray-600: #e5e7eb;
+  --gray-700: #f3f4f6;
+  --gray-800: #f9fafb;
+  --gray-900: #ffffff;
+}

@@ -1,5 +1,5 @@
 {
-  "name": "taskprojet",
+  "name": "workstream",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,12 +14,19 @@
     "@fortawesome/fontawesome-free": "^6.7.1",
     "@vueuse/core": "^12.2.0",
     "axios": "^1.7.9",
+    "chart.js": "^4.5.1",
     "fontawesome": "^5.6.3",
+    "lucide-vue-next": "^1.0.0",
+    "otpauth": "^9.5.2",
     "pinia": "^2.3.0",
     "pinia-plugin-persistedstate": "^4.2.0",
+    "qrcode": "^1.5.4",
     "socket.io-client": "^4.8.1",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-chartjs": "^5.3.4",
+    "vue-i18n": "^11.4.16",
+    "vue-router": "^4.5.0",
+    "vue3-loading-overlay": "^0.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
