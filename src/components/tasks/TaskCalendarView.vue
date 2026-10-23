@@ -144,38 +144,40 @@ const editTask = (task) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .calendar-header h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 500;
   color: #1f2937;
   text-transform: capitalize;
 }
 
 .nav-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 0.5rem;
-  background: #f3f4f6;
-  color: #374151;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: white;
+  color: #6b7280;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .nav-btn:hover {
-  background: #e5e7eb;
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
 }
 
 .calendar-grid {
   background: white;
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
   overflow: hidden;
 }
 
@@ -187,11 +189,13 @@ const editTask = (task) => {
 }
 
 .day-name {
-  padding: 1rem;
+  padding: 0.75rem;
   text-align: center;
-  font-weight: 600;
-  color: #374151;
-  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .calendar-days {
@@ -204,7 +208,7 @@ const editTask = (task) => {
   padding: 0.5rem;
   border-right: 1px solid #f3f4f6;
   border-bottom: 1px solid #f3f4f6;
-  transition: background 0.2s ease;
+  transition: background 0.15s ease;
 }
 
 .calendar-day:hover {
@@ -212,23 +216,24 @@ const editTask = (task) => {
 }
 
 .calendar-day.other-month {
-  background: #f9fafb;
+  background: #fafafa;
   opacity: 0.5;
 }
 
 .calendar-day.today {
-  background: #eff6ff;
+  background: #f0f9ff;
 }
 
 .day-number {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  font-weight: 500;
   color: #374151;
   margin-bottom: 0.5rem;
 }
 
 .calendar-day.today .day-number {
-  color: #2563eb;
+  color: #0284c7;
+  font-weight: 600;
 }
 
 .day-tasks {
@@ -239,34 +244,40 @@ const editTask = (task) => {
 
 .task-dot {
   height: 24px;
-  border-radius: 0.25rem;
+  border-radius: 3px;
   padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  color: white;
+  font-size: 0.6875rem;
+  color: #374151;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  border: 1px solid #e5e7eb;
 }
 
 .task-dot:hover {
-  transform: scale(1.05);
+  background: #e5e7eb;
+  border-color: #d1d5db;
 }
 
 .task-dot.low {
-  background: #3b82f6;
+  background: #dbeafe;
+  border-color: #bfdbfe;
 }
 
 .task-dot.medium {
-  background: #f59e0b;
+  background: #fef3c7;
+  border-color: #fde68a;
 }
 
 .task-dot.high {
-  background: #ef4444;
+  background: #fee2e2;
+  border-color: #fecaca;
 }
 
 .task-dot.urgent {
-  background: #dc2626;
+  background: #fecaca;
+  border-color: #fca5a5;
 }
 </style>

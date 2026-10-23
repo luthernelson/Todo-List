@@ -32,9 +32,12 @@
         <label>{{ $t('reports.reportType') }}</label>
         <select v-model="selectedReportType" class="filter-select">
           <option value="all">{{ $t('reports.allTypes') }}</option>
-          <option value="summary">{{ $t('reports.summary') }}</option>
-          <option value="budget">{{ $t('reports.budget') }}</option>
-          <option value="progress">{{ $t('reports.progress') }}</option>
+          <option value="summary">Résumé général</option>
+          <option value="tasks">Rapport de tâches</option>
+          <option value="productivity">Productivité</option>
+          <option value="team">Performance équipe</option>
+          <option value="budget">Budget</option>
+          <option value="timeline">Timeline</option>
         </select>
       </div>
 
@@ -99,7 +102,7 @@
           </svg>
         </div>
         <div class="stat-info">
-          <h3>{{ totalBudget }}€</h3>
+          <h3>{{ totalBudget.toLocaleString() }}€</h3>
           <p>{{ $t('reports.totalBudget') }}</p>
         </div>
       </div>
@@ -118,29 +121,45 @@
         </button>
       </div>
 
-      <div class="reports-grid">
+      <div v-if="isLoading" class="reports-grid">
+        <CardSkeleton v-for="i in 6" :key="i" />
+      </div>
+
+      <div v-else class="reports-grid">
         <div v-for="report in reports" :key="report.id" class="report-card">
           <div class="report-header">
             <div class="report-icon" :class="report.type">
-              <svg v-if="report.type === 'summary'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg v-if="report.type === 'summary'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
               </svg>
-              <svg v-if="report.type === 'budget'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg v-if="report.type === 'tasks'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+              <svg v-if="report.type === 'productivity'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+              <svg v-if="report.type === 'team'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <svg v-if="report.type === 'budget'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="1" x2="12" y2="23"/>
                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
               </svg>
-              <svg v-if="report.type === 'progress'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="20" x2="18" y2="10"/>
-                <line x1="12" y1="20" x2="12" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="14"/>
+              <svg v-if="report.type === 'timeline'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
               </svg>
             </div>
             <div class="report-info">
               <h4>{{ report.title }}</h4>
               <p>{{ formatDate(report.generatedAt) }}</p>
+              <span class="report-badge">{{ getReportTypeLabel(report.type) }}</span>
             </div>
-            <span class="report-badge">{{ getReportTypeLabel(report.type) }}</span>
           </div>
 
           <div class="report-metrics">
@@ -182,9 +201,12 @@
         <div v-for="project in projectsWithBudget" :key="project.id" class="budget-card">
           <div class="budget-header">
             <h3>{{ project.name }}</h3>
-            <span class="budget-amount">{{ project.budget.totalBudget }}€</span>
+            <span class="budget-amount">{{ project.budget.totalBudget.toLocaleString() }}€</span>
           </div>
-          <div class="budget-progress">
+          <div v-if="project.startDate && project.endDate" class="budget-period">
+            <span>{{ formatDate(project.startDate) }} - {{ formatDate(project.endDate) }}</span>
+          </div>
+          <div v-if="project.budget" class="budget-progress">
             <div class="progress-bar">
               <div
                 class="progress-fill"
@@ -193,8 +215,8 @@
               ></div>
             </div>
             <div class="budget-details">
-              <span>{{ $t('reports.spent') }}: {{ project.budget.spent }}€</span>
-              <span>{{ $t('reports.remaining') }}: {{ project.budget.remaining }}€</span>
+              <span>{{ $t('reports.spent') }}: {{ project.budget.spent.toLocaleString() }}€</span>
+              <span>{{ $t('reports.remaining') }}: {{ project.budget.remaining.toLocaleString() }}€</span>
             </div>
           </div>
         </div>
@@ -207,67 +229,140 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useProjectStore } from '@/stores/projectStore'
+import CardSkeleton from '@/components/ui/CardSkeleton.vue'
 
 const { t } = useI18n()
 const projectStore = useProjectStore()
+const isLoading = ref(true)
 
 const selectedProject = ref('all')
 const selectedPeriod = ref('month')
 const selectedReportType = ref('all')
 
 const projects = ref([
-  { id: 1, name: 'Projet Alpha', budget: { totalBudget: 5000, spent: 3200, remaining: 1800 } },
-  { id: 2, name: 'Projet Beta', budget: { totalBudget: 10000, spent: 7500, remaining: 2500 } },
-  { id: 3, name: 'Projet Gamma', budget: { totalBudget: 3000, spent: 2100, remaining: 900 } },
+  {
+    id: 1,
+    name: 'Refonte E-commerce',
+    budget: { totalBudget: 25000, spent: 18200, remaining: 6800 },
+    startDate: '2024-01-01',
+    endDate: '2024-06-30',
+  },
+  {
+    id: 2,
+    name: 'Application Mobile',
+    budget: { totalBudget: 35000, spent: 28500, remaining: 6500 },
+    startDate: '2024-02-01',
+    endDate: '2024-08-31',
+  },
+  {
+    id: 3,
+    name: 'Dashboard Analytics',
+    budget: { totalBudget: 15000, spent: 8900, remaining: 6100 },
+    startDate: '2024-03-01',
+    endDate: '2024-05-31',
+  },
+  {
+    id: 4,
+    name: 'Campagne Social Media',
+    budget: { totalBudget: 8000, spent: 7200, remaining: 800 },
+    startDate: '2024-01-15',
+    endDate: '2024-04-15',
+  },
+  {
+    id: 5,
+    name: 'SEO Audit',
+    budget: { totalBudget: 5000, spent: 2100, remaining: 2900 },
+    startDate: '2024-02-15',
+    endDate: '2024-03-31',
+  },
 ])
 
 const reports = ref([
   {
     id: 1,
-    title: 'Rapport mensuel - Janvier',
+    title: 'Résumé mensuel - Janvier 2024',
     type: 'summary',
     generatedAt: new Date().toISOString(),
-    metrics: { totalTasks: 45, completedTasks: 32, totalHours: 120 },
+    metrics: { totalTasks: 145, completedTasks: 98, totalHours: 520 },
   },
   {
     id: 2,
-    title: 'Budget - Projet Alpha',
-    type: 'budget',
+    title: 'Rapport de tâches - Refonte E-commerce',
+    type: 'tasks',
     generatedAt: new Date(Date.now() - 86400000).toISOString(),
-    metrics: { totalTasks: 20, completedTasks: 15, totalHours: 65 },
+    metrics: { totalTasks: 58, completedTasks: 42, totalHours: 215 },
   },
   {
     id: 3,
-    title: 'Progression - Q1 2024',
-    type: 'progress',
+    title: 'Productivité - Q1 2024',
+    type: 'productivity',
     generatedAt: new Date(Date.now() - 172800000).toISOString(),
-    metrics: { totalTasks: 80, completedTasks: 55, totalHours: 200 },
+    metrics: { totalTasks: 320, completedTasks: 245, totalHours: 1280 },
+  },
+  {
+    id: 4,
+    title: 'Performance équipe - TechCorp Solutions',
+    type: 'team',
+    generatedAt: new Date(Date.now() - 259200000).toISOString(),
+    metrics: { totalTasks: 185, completedTasks: 142, totalHours: 780 },
+  },
+  {
+    id: 5,
+    title: 'Budget - Application Mobile',
+    type: 'budget',
+    generatedAt: new Date(Date.now() - 345600000).toISOString(),
+    metrics: { totalTasks: 95, completedTasks: 78, totalHours: 410 },
+  },
+  {
+    id: 6,
+    title: 'Timeline - Dashboard Analytics',
+    type: 'timeline',
+    generatedAt: new Date(Date.now() - 432000000).toISOString(),
+    metrics: { totalTasks: 67, completedTasks: 55, totalHours: 285 },
+  },
+  {
+    id: 7,
+    title: 'Résumé mensuel - Décembre 2023',
+    type: 'summary',
+    generatedAt: new Date(Date.now() - 2592000000).toISOString(),
+    metrics: { totalTasks: 132, completedTasks: 115, totalHours: 580 },
+  },
+  {
+    id: 8,
+    title: 'Rapport de tâches - Campagne Social Media',
+    type: 'tasks',
+    generatedAt: new Date(Date.now() - 518400000).toISOString(),
+    metrics: { totalTasks: 38, completedTasks: 32, totalHours: 145 },
   },
 ])
 
 const totalProjects = computed(() => projects.value.length)
 const completedTasks = computed(() => reports.value.reduce((sum, r) => sum + r.metrics.completedTasks, 0))
 const totalHours = computed(() => reports.value.reduce((sum, r) => sum + r.metrics.totalHours, 0))
-const totalBudget = computed(() => projects.value.reduce((sum, p) => sum + p.budget.totalBudget, 0))
+const totalBudget = computed(() => projects.value.reduce((sum, p) => sum + (p.budget?.totalBudget || 0), 0))
 
-const projectsWithBudget = computed(() => projects.value.filter(p => p.budget.totalBudget > 0))
+const projectsWithBudget = computed(() => projects.value.filter(p => p.budget && p.budget.totalBudget > 0))
 
 const formatDate = (dateString) => {
+  if (!dateString) return ''
   const date = new Date(dateString)
-  return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+  return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
 }
 
 const getReportTypeLabel = (type) => {
   const labels = {
-    summary: t('reports.summary'),
-    budget: t('reports.budget'),
-    progress: t('reports.progress'),
+    summary: 'Résumé',
+    tasks: 'Tâches',
+    productivity: 'Productivité',
+    team: 'Équipe',
+    budget: 'Budget',
+    timeline: 'Timeline',
   }
   return labels[type] || type
 }
 
 const calculateBudgetProgress = (budget) => {
-  if (budget.totalBudget === 0) return 0
+  if (!budget || budget.totalBudget === 0) return 0
   return (budget.spent / budget.totalBudget) * 100
 }
 
@@ -289,6 +384,9 @@ const exportReport = (report) => {
 
 onMounted(() => {
   // Charger les données réelles depuis le store
+  setTimeout(() => {
+    isLoading.value = false
+  }, 1500)
 })
 </script>
 
@@ -296,109 +394,107 @@ onMounted(() => {
 .reports-page {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
 }
 
 .reports-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .reports-header h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: #293848;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: #1F2937;
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
-  color: #64748B;
-  font-size: 1.1rem;
+  color: #6B7280;
+  font-size: 0.9rem;
 }
 
 .filters-section {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
   background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.375rem;
   flex: 1;
-  min-width: 200px;
+  min-width: 180px;
 }
 
 .filter-group label {
-  font-weight: 600;
+  font-weight: 500;
   color: #374151;
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
 }
 
 .filter-select {
-  padding: 0.75rem;
-  border: 2px solid #E5E7EB;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 0.625rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 0.875rem;
   background: white;
   cursor: pointer;
 }
 
 .filter-select:focus {
   outline: none;
-  border-color: #293848;
+  border-color: #374151;
 }
 
 .btn-generate {
-  padding: 0.75rem 1.5rem;
-  background: #293848;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
   height: fit-content;
   align-self: flex-end;
+  font-size: 0.875rem;
 }
 
 .btn-generate:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  background: #e5e7eb;
+  border-color: #d1d5db;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .stat-card {
   background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.875rem;
 }
 
 .stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
   color: white;
   display: flex;
   align-items: center;
@@ -406,102 +502,125 @@ onMounted(() => {
 }
 
 .stat-info h3 {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 600;
   color: #1F2937;
   margin: 0;
 }
 
 .stat-info p {
   color: #6B7280;
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
   margin: 0.25rem 0 0 0;
 }
 
 .reports-section {
   background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .section-header h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 500;
   color: #1F2937;
   margin: 0;
 }
 
 .btn-create {
-  padding: 0.75rem 1.5rem;
-  background: #293848;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
+  font-size: 0.875rem;
 }
 
 .btn-create:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  background: #e5e7eb;
+  border-color: #d1d5db;
 }
 
 .reports-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
 }
 
 .report-card {
-  background: #F8FAFC;
-  border: 2px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 1.5rem;
-  transition: all 0.3s;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1.25rem;
+  transition: all 0.15s ease;
 }
 
 .report-card:hover {
-  border-color: #293848;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
+  background: #f3f4f6;
 }
 
 .report-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
 }
 
 .report-icon {
-  width: 45px;
-  height: 45px;
-  background: #293848;
-  color: white;
-  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  background: #e5e7eb;
+  color: #6b7280;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.report-icon.budget {
-  background: #8B5CF6;
+.report-icon.summary {
+  background: #dbeafe;
+  color: #1e40af;
 }
 
-.report-icon.progress {
-  background: #F59E0B;
+.report-icon.tasks {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.report-icon.productivity {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.report-icon.team {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.report-icon.budget {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+.report-icon.timeline {
+  background: #cffafe;
+  color: #155e75;
 }
 
 .report-info {
@@ -509,31 +628,31 @@ onMounted(() => {
 }
 
 .report-info h4 {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 500;
   color: #1F2937;
   margin: 0;
 }
 
 .report-info p {
   color: #6B7280;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   margin: 0.25rem 0 0 0;
 }
 
 .report-badge {
-  padding: 0.25rem 0.75rem;
-  background: #DBEAFE;
-  color: #1E40AF;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  background: #f3f4f6;
+  color: #4b5563;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 500;
 }
 
 .report-metrics {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
 }
 
 .metric {
@@ -542,15 +661,15 @@ onMounted(() => {
 }
 
 .metric .label {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: #6B7280;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .metric .value {
-  font-size: 1rem;
+  font-size: 0.875rem;
   color: #1F2937;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .report-actions {
@@ -562,116 +681,119 @@ onMounted(() => {
 .btn-export {
   flex: 1;
   padding: 0.5rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
+  background: white;
 }
 
 .btn-view {
-  background: #293848;
+  background: #374151;
   color: white;
+  border-color: #374151;
 }
 
 .btn-view:hover {
-  background: #1E40AF;
-}
-
-.btn-export {
-  background: white;
-  color: #6B7280;
-  border: 2px solid #E5E7EB;
+  background: #1f2937;
+  border-color: #1f2937;
 }
 
 .btn-export:hover {
-  border-color: #293848;
-  color: #293848;
+  background: #f3f4f6;
+  border-color: #d1d5db;
 }
 
 .budget-section {
   background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1.5rem;
 }
 
 .budget-section h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 500;
   color: #1F2937;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .budget-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
 }
 
 .budget-card {
-  background: #F8FAFC;
-  border: 2px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1.25rem;
 }
 
 .budget-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.875rem;
 }
 
 .budget-header h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 500;
   color: #1F2937;
   margin: 0;
 }
 
 .budget-amount {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #10B981;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #059669;
+}
+
+.budget-period {
+  font-size: 0.75rem;
+  color: #6B7280;
+  margin-bottom: 0.875rem;
 }
 
 .budget-progress {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .progress-bar {
-  height: 8px;
-  background: #E5E7EB;
-  border-radius: 4px;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: #293848;
+  background: #374151;
   transition: width 0.3s ease;
 }
 
 .progress-fill.warning {
-  background: #F59E0B;
+  background: #d97706;
 }
 
 .progress-fill.danger {
-  background: #EF4444;
+  background: #dc2626;
 }
 
 .budget-details {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: #6B7280;
 }
 

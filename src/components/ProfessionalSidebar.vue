@@ -45,10 +45,18 @@
         </RouterLink>
       </div>
 
-      <!-- Section entreprise (visible seulement pour comptes entreprise) -->
-      <div v-if="userStore.user?.mode === 'pro'" class="nav-section">
+      <!-- Section entreprise -->
+      <div class="nav-section">
         <span v-if="!isCollapsed" class="nav-section-title">Entreprise</span>
-        <RouterLink to="/company" class="nav-item" :class="{ active: isActive('/company') }">
+        <RouterLink to="/entreprises" class="nav-item" :class="{ active: isActive('/entreprises') }">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 21h18"/>
+            <path d="M5 21V7l8-4 8 4v14"/>
+            <path d="M9 10a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/>
+          </svg>
+          <span v-if="!isCollapsed">Mes entreprises</span>
+        </RouterLink>
+        <RouterLink to="/equipe" class="nav-item" :class="{ active: isActive('/equipe') }">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
             <circle cx="9" cy="7" r="4"/>
@@ -70,7 +78,7 @@
 
       <div class="nav-section">
         <span v-if="!isCollapsed" class="nav-section-title">Planification</span>
-        <RouterLink to="/planning" class="nav-item" :class="{ active: isActive('/planning') }">
+        <RouterLink to="/calendar" class="nav-item" :class="{ active: isActive('/calendar') }">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
             <line x1="16" y1="2" x2="16" y2="6"/>
@@ -78,14 +86,6 @@
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
           <span v-if="!isCollapsed">Calendrier</span>
-        </RouterLink>
-        <RouterLink to="/roadmap" class="nav-item" :class="{ active: isActive('/roadmap') }">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="20" x2="18" y2="10"/>
-            <line x1="12" y1="20" x2="12" y2="4"/>
-            <line x1="6" y1="20" x2="6" y2="14"/>
-          </svg>
-          <span v-if="!isCollapsed">Roadmap</span>
         </RouterLink>
       </div>
 

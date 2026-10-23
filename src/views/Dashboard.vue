@@ -187,7 +187,7 @@ onMounted(() => {
 .dashboard {
   min-height: 100vh;
   background: #f9fafb;
-  padding: 2rem;
+  padding: 0;
 }
 
 .dashboard-content {
@@ -198,10 +198,10 @@ onMounted(() => {
 /* AI Assistant Section */
 .ai-assistant-section {
   background: white;
-  border-radius: 1rem;
-  padding: 2.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .ai-header {
@@ -212,29 +212,19 @@ onMounted(() => {
 }
 
 .ai-icon {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 48px;
+  height: 48px;
+  background: #e5e7eb;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
+  color: #6b7280;
 }
 
 .ai-header h1 {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 500;
   color: #1F2937;
   margin: 0 0 0.5rem 0;
 }
@@ -252,42 +242,41 @@ onMounted(() => {
 
 .ai-input {
   width: 100%;
-  padding: 1.25rem 3.5rem 1.25rem 1.5rem;
-  border: 2px solid #E5E7EB;
-  border-radius: 1rem;
-  font-size: 1rem;
+  padding: 0.875rem 3.5rem 0.875rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.9375rem;
   line-height: 1.5;
   resize: none;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
   font-family: inherit;
 }
 
 .ai-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: #374151;
+  box-shadow: 0 0 0 2px rgba(55, 65, 81, 0.05);
 }
 
 .ai-submit-btn {
   position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  right: 0.75rem;
+  bottom: 0.75rem;
+  width: 32px;
+  height: 32px;
+  background: #374151;
   border: none;
-  border-radius: 50%;
+  border-radius: 4px;
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 
 .ai-submit-btn:hover:not(:disabled) {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: #1f2937;
 }
 
 .ai-submit-btn:disabled {
@@ -309,26 +298,28 @@ onMounted(() => {
 }
 
 .ai-response {
-  background: #F0F9FF;
-  border: 2px solid #BAE6FD;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
 }
 
 .response-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
-  color: #0369A1;
-  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 
 .response-content {
-  color: #0C4A6E;
-  line-height: 1.6;
-  margin-bottom: 1rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .response-actions {
@@ -338,33 +329,34 @@ onMounted(() => {
 
 .btn-primary,
 .btn-secondary {
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.8125rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
+  transition: all 0.15s ease;
+  border: 1px solid #e5e7eb;
 }
 
 .btn-primary {
-  background: #293848;
+  background: #374151;
   color: white;
+  border-color: #374151;
 }
 
 .btn-primary:hover {
-  background: #1E3A5F;
+  background: #1f2937;
+  border-color: #1f2937;
 }
 
 .btn-secondary {
   background: white;
-  color: #6B7280;
-  border: 2px solid #E5E7EB;
+  color: #6b7280;
 }
 
 .btn-secondary:hover {
-  border-color: #293848;
-  color: #293848;
+  background: #f3f4f6;
+  border-color: #d1d5db;
 }
 
 /* Quick Suggestions */
@@ -404,9 +396,9 @@ onMounted(() => {
 /* Recent Projects */
 .recent-projects {
   background: white;
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1.5rem;
 }
 
 .section-header {
@@ -417,8 +409,8 @@ onMounted(() => {
 }
 
 .section-header h2 {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.125rem;
+  font-weight: 500;
   color: #1F2937;
   margin: 0;
 }
@@ -459,17 +451,17 @@ onMounted(() => {
 .project-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border: 1px solid #E5E7EB;
-  border-radius: 0.75rem;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 
 .project-item:hover {
-  border-color: #293848;
-  background: #F9FAFB;
+  border-color: #d1d5db;
+  background: #f9fafb;
 }
 
 .project-dot {
@@ -517,7 +509,7 @@ onMounted(() => {
 
 .progress-bar {
   height: 100%;
-  background: #10B981;
+  background: #374151;
   transition: width 0.3s ease;
 }
 

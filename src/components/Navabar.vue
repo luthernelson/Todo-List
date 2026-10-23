@@ -644,6 +644,10 @@ onUnmounted(() => {
 
 /* Responsive */
 @media (max-width: 1024px) {
+  .navbar-container {
+    gap: 1rem;
+  }
+
   .navbar-menu {
     display: none;
   }
@@ -659,11 +663,20 @@ onUnmounted(() => {
   .btn-new-task {
     display: none;
   }
+
+  .logo-text {
+    font-size: 1.25rem;
+  }
 }
 
 @media (max-width: 768px) {
   .navbar-container {
     padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .logo-image {
+    height: 32px;
   }
 
   .logo-text {
@@ -672,6 +685,26 @@ onUnmounted(() => {
 
   .lang-select {
     display: none;
+  }
+
+  .menu-toggle {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .logo-image {
+    height: 28px;
+  }
+
+  .menu-toggle {
+    width: 32px;
+    height: 32px;
   }
 }
 </style>

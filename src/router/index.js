@@ -23,6 +23,18 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/entreprises',
+      name: 'entreprises',
+      component: () => import('@/views/EntreprisesPage.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/equipe',
+      name: 'equipe',
+      component: () => import('@/views/EquipePage.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/company',
       name: 'company-management',
       component: () => import('@/views/company/CompanyManagement.vue'),
@@ -31,7 +43,7 @@ const router = createRouter({
     {
       path: '/tasks',
       name: 'tasks',
-      component: () => import('@/views/task/TaskRegister.vue'),
+      component: () => import('@/views/TasksPage.vue'),
       meta: { requiresAuth: true },
     },
     {
@@ -80,6 +92,18 @@ const router = createRouter({
       path: '/budget',
       name: 'budget',
       component: () => import('@/views/BudgetPage.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/calendar',
+      name: 'calendar',
+      component: () => import('@/views/CalendarPage.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/reports',
+      name: 'reports',
+      component: () => import('@/views/reports/ReportsPage.vue'),
       meta: { requiresAuth: true },
     },
   ],

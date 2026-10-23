@@ -129,33 +129,34 @@ const deleteTask = (taskId) => {
 .task-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .task-item {
   background: white;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .task-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+  border-color: #d1d5db;
+  background: #f9fafb;
 }
 
 .task-main {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: flex-start;
 }
 
 .task-checkbox input {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
+  accent-color: #374151;
 }
 
 .task-content {
@@ -163,21 +164,21 @@ const deleteTask = (taskId) => {
 }
 
 .task-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 500;
   color: #1f2937;
   margin-bottom: 0.25rem;
 }
 
 .task-description {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #6b7280;
   margin-bottom: 0.5rem;
 }
 
 .task-meta {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   font-size: 0.75rem;
   color: #9ca3af;
 }
@@ -192,22 +193,22 @@ const deleteTask = (taskId) => {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .task-assignees {
   display: flex;
-  gap: -0.25rem;
+  gap: -0.125rem;
 }
 
 .assignee-avatar {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: #667eea;
-  color: white;
-  font-size: 0.75rem;
-  font-weight: 600;
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: 0.6875rem;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,47 +221,50 @@ const deleteTask = (taskId) => {
 }
 
 .action-btn {
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 0.375rem;
-  background: #f3f4f6;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: white;
   color: #6b7280;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .action-btn:hover {
-  background: #e5e7eb;
+  background: #f3f4f6;
   color: #374151;
+  border-color: #d1d5db;
 }
 
 .action-btn.delete:hover {
-  background: #fee2e2;
-  color: #ef4444;
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
 }
 
 .subtasks-section {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
+  margin-top: 0.625rem;
+  padding-top: 0.625rem;
   border-top: 1px solid #f3f4f6;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .subtask-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #6b7280;
 }
 
 .subtask-item input {
   cursor: pointer;
+  accent-color: #374151;
 }
 </style>

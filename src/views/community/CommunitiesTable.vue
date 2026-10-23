@@ -14,7 +14,11 @@
       </button>
     </div>
 
-    <div class="communities-table">
+    <div v-if="isLoading" class="communities-table">
+      <TableSkeleton :columns="6" :rows="5" />
+    </div>
+
+    <div v-else class="communities-table">
       <table>
         <thead>
           <tr>
@@ -142,11 +146,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import TableSkeleton from '@/components/ui/TableSkeleton.vue'
 
 const router = useRouter()
 const showCreateModal = ref(false)
+const isLoading = ref(true)
 
 const projects = ref([
   { id: 1, name: 'Projet Alpha' },
@@ -256,6 +262,12 @@ const formatDate = (dateString) => {
   const date = new Date(dateString)
   return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
 }
+
+onMounted(() => {
+  setTimeout(() => {
+    isLoading.value = false
+  }, 1500)
+})
 </script>
 
 <style scoped>
@@ -273,8 +285,8 @@ const formatDate = (dateString) => {
 }
 
 .page-header h1 {
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 1.75rem;
+  font-weight: 500;
   color: #1F2937;
   margin: 0 0 0.5rem 0;
 }
@@ -282,30 +294,33 @@ const formatDate = (dateString) => {
 .page-header p {
   color: #6B7280;
   margin: 0;
+  font-size: 0.9rem;
 }
 
 .btn-create {
-  padding: 0.75rem 1.5rem;
-  background: #1F2937;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  padding: 0.625rem 1.25rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s;
+  font-size: 0.875rem;
 }
 
 .btn-create:hover {
-  background: #374151;
+  background: #e5e7eb;
+  border-color: #d1d5db;
 }
 
 .communities-table {
   background: white;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -315,23 +330,23 @@ table {
 }
 
 thead {
-  background: #F9FAFB;
-  border-bottom: 1px solid #E5E7EB;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 th {
-  padding: 1rem 1.5rem;
+  padding: 0.875rem 1.25rem;
   text-align: left;
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: 500;
+  font-size: 0.75rem;
   color: #6B7280;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 tbody tr {
-  border-bottom: 1px solid #E5E7EB;
-  transition: background 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.15s ease;
 }
 
 tbody tr:last-child {
@@ -339,12 +354,13 @@ tbody tr:last-child {
 }
 
 tbody tr:hover {
-  background: #F9FAFB;
+  background: #f9fafb;
 }
 
 td {
-  padding: 1rem 1.5rem;
+  padding: 0.875rem 1.25rem;
   vertical-align: middle;
+  font-size: 0.875rem;
 }
 
 .community-name {
@@ -354,99 +370,102 @@ td {
 }
 
 .community-icon {
-  width: 40px;
-  height: 40px;
-  background: #1F2937;
-  color: white;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  background: #e5e7eb;
+  color: #6b7280;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 
 .project-badge {
-  padding: 0.25rem 0.75rem;
-  background: #F3F4F6;
-  color: #374151;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  padding: 0.25rem 0.625rem;
+  background: #f3f4f6;
+  color: #4b5563;
+  border-radius: 4px;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
 .members-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .member-avatars {
   display: flex;
-  gap: -0.25rem;
+  gap: -0.125rem;
 }
 
 .avatar {
-  width: 32px;
-  height: 32px;
-  background: #1F2937;
-  color: white;
+  width: 28px;
+  height: 28px;
+  background: #e5e7eb;
+  color: #6b7280;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.6875rem;
+  font-weight: 500;
   border: 2px solid white;
 }
 
 .avatar.more {
-  background: #E5E7EB;
-  color: #6B7280;
+  background: #f3f4f6;
+  color: #9ca3af;
 }
 
 .member-count {
-  font-size: 0.875rem;
-  color: #6B7280;
+  font-size: 0.75rem;
+  color: #6b7280;
 }
 
 .message-count {
-  font-weight: 600;
-  color: #1F2937;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
 }
 
 .date {
-  color: #6B7280;
-  font-size: 0.875rem;
+  color: #9ca3af;
+  font-size: 0.75rem;
 }
 
 .actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .action-btn {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: #F3F4F6;
-  border-radius: 6px;
-  color: #6B7280;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 4px;
+  color: #6b7280;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
 }
 
 .action-btn:hover {
-  background: #E5E7EB;
-  color: #1F2937;
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
 }
 
 .action-btn.delete:hover {
-  background: #FEF2F2;
-  color: #DC2626;
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
 }
 
 /* Modal */
@@ -456,7 +475,7 @@ td {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -465,156 +484,160 @@ td {
 
 .modal-content {
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   width: 90%;
-  max-width: 600px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid #E5E7EB;
+  padding: 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .modal-header h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.125rem;
+  font-weight: 500;
   color: #1F2937;
   margin: 0;
 }
 
 .close-btn {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: none;
-  border-radius: 6px;
-  color: #6B7280;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 4px;
+  color: #6b7280;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
 }
 
 .close-btn:hover {
-  background: #F3F4F6;
-  color: #1F2937;
+  background: #f3f4f6;
+  color: #374151;
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 1.25rem;
 }
 
 .form-group {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .form-group label {
   display: block;
   font-weight: 500;
   color: #374151;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
+  margin-bottom: 0.375rem;
+  font-size: 0.8125rem;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
+  padding: 0.625rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
   font-size: 0.875rem;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
   font-family: inherit;
+  background: white;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #1F2937;
-  box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1);
+  border-color: #374151;
+  box-shadow: 0 0 0 2px rgba(55, 65, 81, 0.05);
 }
 
 .members-preview {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  max-height: 200px;
+  gap: 0.375rem;
+  max-height: 180px;
   overflow-y: auto;
-  padding: 1rem;
-  background: #F9FAFB;
-  border-radius: 8px;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
 }
 
 .member-preview {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.625rem;
   padding: 0.5rem;
   background: white;
-  border-radius: 6px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
 }
 
 .member-preview .avatar {
-  width: 32px;
-  height: 32px;
-  background: #1F2937;
-  color: white;
+  width: 28px;
+  height: 28px;
+  background: #e5e7eb;
+  color: #6b7280;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.6875rem;
+  font-weight: 500;
 }
 
 .member-preview span {
   flex: 1;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #374151;
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
-  padding: 1.5rem;
-  border-top: 1px solid #E5E7EB;
+  gap: 0.625rem;
+  padding: 1.25rem;
+  border-top: 1px solid #e5e7eb;
 }
 
 .btn-cancel,
 .btn-confirm {
-  padding: 0.75rem 1.5rem;
+  padding: 0.625rem 1.25rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
+  font-size: 0.875rem;
 }
 
 .btn-cancel {
   background: white;
-  color: #6B7280;
-  border: 1px solid #E5E7EB;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
 }
 
 .btn-cancel:hover {
-  background: #F3F4F6;
+  background: #f3f4f6;
 }
 
 .btn-confirm {
-  background: #1F2937;
+  background: #374151;
   color: white;
 }
 
 .btn-confirm:hover {
-  background: #374151;
+  background: #1f2937;
 }
 
 @media (max-width: 768px) {
@@ -625,7 +648,7 @@ td {
   .page-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .btn-create {

@@ -198,8 +198,17 @@ const handleClickOutside = (event) => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+  position: relative;
+  width: calc(100% - var(--sidebar-width, 260px));
 }
+
+.main-content.sidebar-collapsed {
+  margin-left: 64px;
+  width: calc(100% - 64px);
+}
+
+
 
 .main-content.sidebar-collapsed {
   margin-left: 80px;
@@ -584,16 +593,33 @@ const handleClickOutside = (event) => {
   .page-content.with-activity {
     margin-right: 320px;
   }
+
+  .header-actions {
+    gap: 0.5rem;
+  }
+
+  .search-section {
+    max-width: 300px;
+  }
 }
 
 @media (max-width: 768px) {
   .top-header {
-    padding: 1rem;
-    gap: 1rem;
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
   }
 
   .search-section {
-    max-width: 200px;
+    max-width: 100%;
+    order: 1;
+    flex: 1;
+  }
+
+  .header-actions {
+    order: 2;
+    width: 100%;
+    justify-content: space-between;
   }
 
   .lang-select {
@@ -610,6 +636,25 @@ const handleClickOutside = (event) => {
 
   .page-content.with-activity {
     margin-right: 0;
+  }
+
+  .user-menu {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .page-content {
+    padding: 0.75rem;
   }
 }
 </style>
